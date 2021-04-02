@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Елена Валеева](https://up.htmlacademy.ru/ecmascript/14/user/232403).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Хапов](https://htmlacademy.ru/profile/id118459).
 
 ---
 
