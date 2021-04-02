@@ -7,7 +7,7 @@ const RenderPosition = {
 const render = (
   container,
   template,
-  position = RenderPosition.BEFORE_END
+  position = RenderPosition.BEFORE_END,
 ) => {
   container.insertAdjacentHTML(position, template);
 };
