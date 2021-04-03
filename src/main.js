@@ -1,4 +1,5 @@
 import {getUserTemplate} from './views/user-view';
+import {getMenuTemplate} from './views/menu-view';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -15,3 +16,7 @@ const render = (
 const headerElement = document.querySelector('.header');
 
 render(headerElement, getUserTemplate());
+
+const mainElement = document.querySelector('.main');
+
+render(mainElement, getMenuTemplate());
