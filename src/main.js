@@ -3,9 +3,11 @@ import {getMenuTemplate} from './views/menu-view';
 import {getSortingTemplate} from './views/sorting-view';
 import {getMoviesTemplate} from './views/movies-view';
 import {getMovieTemplate} from './views/movie-view';
+import {getShowMoreButtonTemplate} from './views/show-more-button-view';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
+  AFTER_END: 'afterend',
 };
 
 const MoviesCount = {
@@ -37,6 +39,8 @@ render(mainElement, getMoviesTemplate());
 const moviesElement = mainElement.querySelector('[data-movies]');
 
 movies.forEach(() => render(moviesElement, getMovieTemplate()));
+
+render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
 
 const topRatedElement = mainElement.querySelector('[data-top-rated]');
 
