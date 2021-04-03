@@ -4,6 +4,7 @@ import {getSortingTemplate} from './views/sorting-view';
 import {getMoviesTemplate} from './views/movies-view';
 import {getMovieTemplate} from './views/movie-view';
 import {getShowMoreButtonTemplate} from './views/show-more-button-view';
+import {getMoviesTotalTemplate} from './views/movies-total-view';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -51,3 +52,7 @@ const mostCommentedElement = mainElement.querySelector('[data-commented]');
 
 movies.slice(0, MoviesCount.COMMENTED)
   .forEach(() => render(mostCommentedElement, getMovieTemplate()));
+
+const moviesTotalElement = document.querySelector('.footer__statistics');
+
+render(moviesTotalElement, getMoviesTotalTemplate());
