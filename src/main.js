@@ -1,5 +1,6 @@
 import {getUserTemplate} from './views/user-view';
 import {getMenuTemplate} from './views/menu-view';
+import {getSortingTemplate} from './views/sorting-view';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -20,3 +21,4 @@ render(headerElement, getUserTemplate());
 const mainElement = document.querySelector('.main');
 
 render(mainElement, getMenuTemplate());
+render(mainElement, getSortingTemplate());
