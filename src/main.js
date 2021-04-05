@@ -6,6 +6,7 @@ import {getMovieTemplate} from './views/movie';
 import {getShowMoreButtonTemplate} from './views/show-more-button';
 import {getMoviesTotalTemplate} from './views/movies-total';
 import {getMovies} from './mocks/movies';
+import {getUser} from './mocks/user';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -19,6 +20,7 @@ const MoviesCount = {
 };
 
 const movies = getMovies(MoviesCount.ALL);
+const user = getUser(movies);
 
 const render = (
   container,
@@ -30,7 +32,7 @@ const render = (
 
 const headerElement = document.querySelector('.header');
 
-render(headerElement, getUserTemplate());
+render(headerElement, getUserTemplate(user));
 
 const mainElement = document.querySelector('.main');
 
