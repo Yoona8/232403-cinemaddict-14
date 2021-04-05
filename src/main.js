@@ -1,10 +1,10 @@
-import {getUserTemplate} from './views/user-view';
-import {getMenuTemplate} from './views/menu-view';
-import {getSortingTemplate} from './views/sorting-view';
-import {getMoviesTemplate} from './views/movies-view';
-import {getMovieTemplate} from './views/movie-view';
-import {getShowMoreButtonTemplate} from './views/show-more-button-view';
-import {getMoviesTotalTemplate} from './views/movies-total-view';
+import {getUserTemplate} from './views/user';
+import {getMenuTemplate} from './views/menu';
+import {getSortingTemplate} from './views/sorting';
+import {getMoviesTemplate} from './views/movies';
+import {getMovieTemplate} from './views/movie';
+import {getShowMoreButtonTemplate} from './views/show-more-button';
+import {getMoviesTotalTemplate} from './views/movies-total';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
