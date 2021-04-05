@@ -5,6 +5,7 @@ import {getMoviesTemplate} from './views/movies';
 import {getMovieTemplate} from './views/movie';
 import {getShowMoreButtonTemplate} from './views/show-more-button';
 import {getMoviesTotalTemplate} from './views/movies-total';
+import {getMovies} from './mocks/movie';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -17,7 +18,7 @@ const MoviesCount = {
   COMMENTED: 2,
 };
 
-const movies = new Array(MoviesCount.ALL).fill('');
+const movies = getMovies(MoviesCount.ALL);
 
 const render = (
   container,
