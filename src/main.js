@@ -14,7 +14,7 @@ const RenderPosition = {
 };
 
 const MoviesCount = {
-  ALL: 5,
+  ALL: 20,
   TOP_RATED: 2,
   COMMENTED: 2,
 };
@@ -42,19 +42,19 @@ render(mainElement, getMoviesTemplate());
 
 const moviesElement = mainElement.querySelector('[data-movies]');
 
-movies.forEach(() => render(moviesElement, getMovieTemplate()));
+movies.forEach((movie) => render(moviesElement, getMovieTemplate(movie)));
 
 render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
 
 const topRatedElement = mainElement.querySelector('[data-top-rated]');
 
-movies.slice(0, MoviesCount.COMMENTED)
-  .forEach(() => render(topRatedElement, getMovieTemplate()));
+movies.slice(0, MoviesCount.TOP_RATED)
+  .forEach((movie) => render(topRatedElement, getMovieTemplate(movie)));
 
 const mostCommentedElement = mainElement.querySelector('[data-commented]');
 
 movies.slice(0, MoviesCount.COMMENTED)
-  .forEach(() => render(mostCommentedElement, getMovieTemplate()));
+  .forEach((movie) => render(mostCommentedElement, getMovieTemplate(movie)));
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
