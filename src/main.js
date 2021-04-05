@@ -5,7 +5,7 @@ import {getMoviesTemplate} from './views/movies';
 import {getMovieTemplate} from './views/movie';
 import {getShowMoreButtonTemplate} from './views/show-more-button';
 import {getMoviesTotalTemplate} from './views/movies-total';
-import {getMovies} from './mocks/movie';
+import {getMovies} from './mocks/movies';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
