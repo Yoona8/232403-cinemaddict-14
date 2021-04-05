@@ -1,4 +1,5 @@
 import {getRandomInteger} from '../helpers/helpers';
+import {getComments} from './comments';
 
 const TITLES = [
   'The Dance of Life',
@@ -56,7 +57,7 @@ const getMovie = (id) => {
     duration: getRandomInteger(43, 240),
     genres,
     description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
-    comments: [1, 2, 3],
+    comments: getComments(getRandomInteger(0, 5)),
   };
 };
 
