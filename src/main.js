@@ -8,6 +8,7 @@ import {getMoviesTotalTemplate} from './views/movies-total';
 import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
+import {getDetailsModalTemplate} from './views/details-modal';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -46,7 +47,7 @@ render(mainElement, getMoviesTemplate());
 
 const moviesElement = mainElement.querySelector('[data-movies]');
 
-movies.forEach((movie) => render(moviesElement, getMovieTemplate(movie)));
+movies.forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
 
 render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
 
@@ -55,15 +56,18 @@ const topRatedElement = mainElement.querySelector('[data-top-rated]');
 movies.slice()
   .sort((a, b) => b.rating - a.rating)
   .slice(0, MoviesCount.TOP_RATED)
-  .forEach((movie) => render(topRatedElement, getMovieTemplate(movie)));
+  .forEach((movie) => render(topRatedElement, getMovieTemplate(movie, user)));
 
 const mostCommentedElement = mainElement.querySelector('[data-commented]');
 
 movies.slice()
   .sort((a, b) => b.comments.length - a.comments.length)
   .slice(0, MoviesCount.COMMENTED)
-  .forEach((movie) => render(mostCommentedElement, getMovieTemplate(movie)));
+  .forEach((movie) => {
+    render(mostCommentedElement, getMovieTemplate(movie, user));
+  });
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
 render(moviesTotalElement, getMoviesTotalTemplate());
+render(document.body, getDetailsModalTemplate(movies[0], user));
