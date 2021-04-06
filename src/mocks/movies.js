@@ -73,7 +73,7 @@ const getMovie = (id, comments) => {
     duration: getRandomInteger(43, 240),
     genres,
     description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
-    comments: getRandomCommentIds(comments),
+    comments: new Set(getRandomCommentIds(comments)),
   };
 };
 

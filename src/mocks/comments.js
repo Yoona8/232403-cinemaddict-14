@@ -20,7 +20,7 @@ const getComment = (id) => {
 
   return {
     id,
-    author: '0',
+    author: 'John Snow',
     movieId: '0',
     message: COMMENTS[getRandomInteger(0, COMMENTS.length - 1)],
     emoji: emojis[getRandomInteger(0, emojis.length - 1)],

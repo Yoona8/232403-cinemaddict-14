@@ -15,6 +15,10 @@ const formatReleaseDate = (date) => {
   return dayjs(date).format('DD MMMM YYYY');
 };
 
+const formatCommentDate = (date) => {
+  return dayjs(date).format('YYYY/MM/DD hh:mm');
+};
+
 const formatDuration = (duration) => {
   const MINUTES_IN_HOUR = 60;
 
@@ -38,5 +42,6 @@ export {
   getYear,
   formatDuration,
   formatReleaseDate,
+  formatCommentDate,
   trimText
 };
