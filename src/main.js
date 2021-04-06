@@ -71,5 +71,5 @@ movies.slice()
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
-render(moviesTotalElement, getMoviesTotalTemplate());
+render(moviesTotalElement, getMoviesTotalTemplate(movies.length));
 render(document.body, getDetailsModalTemplate(movies[0], user, comments));
