@@ -9,6 +9,7 @@ import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
 import {getDetailsModalTemplate} from './views/details-modal';
+import {getFilters} from './mocks/filters';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -26,6 +27,7 @@ const COMMENTS_COUNT = 10;
 const comments = getComments(COMMENTS_COUNT);
 const movies = getMovies(MoviesCount.ALL, comments);
 const user = getUser(movies);
+const filters = getFilters(movies, user);
 
 const render = (
   container,
@@ -41,7 +43,7 @@ render(headerElement, getUserTemplate(user));
 
 const mainElement = document.querySelector('.main');
 
-render(mainElement, getMenuTemplate());
+render(mainElement, getMenuTemplate(filters));
 render(mainElement, getSortingTemplate());
 render(mainElement, getMoviesTemplate());
 
