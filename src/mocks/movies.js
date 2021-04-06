@@ -1,5 +1,4 @@
 import {getRandomInteger} from '../helpers/helpers';
-import {getComments} from './comments';
 
 const TITLES = [
   'The Dance of Life',
@@ -40,12 +39,22 @@ const DESCRIPTIONS = [
 
 const GENRES = ['Comedy', 'Romance', 'Sci-Fi', 'Fantasy', 'Drama'];
 
+const COMMENTS_MAX_COUNT = 5;
+
 const Rating = {
   MIN: 0,
   MAX: 10,
 };
 
-const getMovie = (id) => {
+const getRandomCommentIds = (comments) => {
+  const length = getRandomInteger(0, COMMENTS_MAX_COUNT);
+
+  return new Array(length).fill('').map(() => {
+    return comments[getRandomInteger(0, comments.length - 1)].id;
+  });
+};
+
+const getMovie = (id, comments) => {
   const genres = GENRES.slice(0, getRandomInteger(0, GENRES.length));
 
   return {
@@ -57,12 +66,13 @@ const getMovie = (id) => {
     duration: getRandomInteger(43, 240),
     genres,
     description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
-    comments: getComments(getRandomInteger(0, 5)),
+    comments: getRandomCommentIds(comments),
   };
 };
 
-const getMovies = (count) => {
-  return new Array(count).fill('').map((item, index) => getMovie(index));
+const getMovies = (count, comments) => {
+  return new Array(count).fill('')
+    .map((item, index) => getMovie(index, comments));
 };
 
 export {getMovies};
