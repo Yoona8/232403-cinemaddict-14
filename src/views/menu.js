@@ -1,11 +1,13 @@
-const getFilterTemplate = (filter) => {
+const getFilterTemplate = (filter, currentFilterName = '') => {
   const {name, count} = filter;
   const url = `#${name.toLowerCase()}`;
+  const activeClassName = filter.name === currentFilterName
+    ? 'main-navigation__item--active' : '';
 
   return `
     <a
       href="${url}"
-      class="main-navigation__item"
+      class="main-navigation__item ${activeClassName}"
     >${name} <span class="main-navigation__item-count">${count}</span></a>
   `;
 };
