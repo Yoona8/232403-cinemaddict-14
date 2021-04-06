@@ -56,11 +56,18 @@ const getRandomCommentIds = (comments) => {
 
 const getMovie = (id, comments) => {
   const genres = GENRES.slice(0, getRandomInteger(0, GENRES.length));
+  const title = TITLES[getRandomInteger(0, TITLES.length - 1)];
 
   return {
     id,
-    title: TITLES[getRandomInteger(0, TITLES.length - 1)],
+    title,
+    director: 'Anthony Mann',
+    writers: 'Anne Wigton, Heinz Herald, Richard Weil',
+    actors: 'Erich von Stroheim, Mary Beth Hughes, Dan Duryea',
+    originalTitle: title,
     poster: POSTERS[getRandomInteger(0, POSTERS.length - 1)],
+    age: '18+',
+    country: 'USA',
     rating: getRandomInteger(Rating.MIN, Rating.MAX),
     releaseDate: new Date(),
     duration: getRandomInteger(43, 240),

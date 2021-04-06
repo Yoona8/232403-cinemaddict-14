@@ -11,6 +11,10 @@ const getYear = (date) => {
   return dayjs(date).year();
 };
 
+const formatReleaseDate = (date) => {
+  return dayjs(date).format('DD MMMM YYYY');
+};
+
 const formatDuration = (duration) => {
   const MINUTES_IN_HOUR = 60;
 
@@ -29,4 +33,10 @@ const trimText = (text, limit) => {
   return text;
 };
 
-export {getRandomInteger, getYear, formatDuration, trimText};
+export {
+  getRandomInteger,
+  getYear,
+  formatDuration,
+  formatReleaseDate,
+  trimText
+};
