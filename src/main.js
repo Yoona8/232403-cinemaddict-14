@@ -20,6 +20,7 @@ const MoviesCount = {
   ALL: 20,
   TOP_RATED: 2,
   COMMENTED: 2,
+  PER_STEP: 5,
 };
 
 const COMMENTS_COUNT = 10;
@@ -49,9 +50,8 @@ render(mainElement, getMoviesTemplate());
 
 const moviesElement = mainElement.querySelector('[data-movies]');
 
-movies.forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
-
-render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
+movies.slice(0, MoviesCount.PER_STEP)
+  .forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
 
 const topRatedElement = mainElement.querySelector('[data-top-rated]');
 
@@ -73,3 +73,28 @@ const moviesTotalElement = document.querySelector('.footer__statistics');
 
 render(moviesTotalElement, getMoviesTotalTemplate(movies.length));
 render(document.body, getDetailsModalTemplate(movies[0], user, comments));
+
+if (movies.length > MoviesCount.PER_STEP) {
+  let renderedMoviesCount = MoviesCount.PER_STEP;
+
+  render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
+
+  const loadMoreButtonElement = mainElement
+    .querySelector('.films-list__show-more');
+
+  const onLoadMoreButtonClick = (evt) => {
+    evt.preventDefault();
+
+    movies
+      .slice(renderedMoviesCount, renderedMoviesCount + MoviesCount.PER_STEP)
+      .forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
+
+    renderedMoviesCount += MoviesCount.PER_STEP;
+
+    if (renderedMoviesCount >= movies.length) {
+      loadMoreButtonElement.remove();
+    }
+  };
+
+  loadMoreButtonElement.addEventListener('click', onLoadMoreButtonClick);
+}
