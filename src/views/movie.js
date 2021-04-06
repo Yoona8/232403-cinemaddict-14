@@ -21,14 +21,14 @@ export const getMovieTemplate = (movie, user) => {
   const durationOutput = formatDuration(duration);
   const genreOutput = genres[0] || '';
   const descriptionOutput = trimText(description, DESCRIPTION_LIMIT);
-  const commentsCount = comments.length;
+  const commentsCount = comments.size;
   const commentsOutput = commentsCount === 1
     ? `${commentsCount} comment`
     : `${commentsCount} comments`;
-  const activeControlButtonClassName = 'film-card__controls-item--active';
-  const isWatched = watched.has(id);
-  const isToWatch = watchlist.has(id);
-  const isFavorite = favorites.has(id);
+  const activeControlClassName = 'film-card__controls-item--active';
+  const watchedClassName = watched.has(id) ? activeControlClassName : '';
+  const toWatchClassName = watchlist.has(id) ? activeControlClassName : '';
+  const favoriteClassName = favorites.has(id) ? activeControlClassName : '';
 
   return `
     <article class="film-card">
@@ -41,7 +41,7 @@ export const getMovieTemplate = (movie, user) => {
       </p>
       <img
         src="./images/posters/${poster}"
-        alt=""
+        alt="${title}"
         class="film-card__poster"
       >
       <p class="film-card__description">${descriptionOutput}</p>
@@ -52,7 +52,7 @@ export const getMovieTemplate = (movie, user) => {
             film-card__controls-item
             button
             film-card__controls-item--add-to-watchlist
-            ${isToWatch ? activeControlButtonClassName : ''}"
+            ${toWatchClassName}"
           type="button"
         >Add to watchlist</button>
         <button
@@ -60,7 +60,7 @@ export const getMovieTemplate = (movie, user) => {
             film-card__controls-item
             button
             film-card__controls-item--mark-as-watched
-            ${isWatched ? activeControlButtonClassName : ''}"
+            ${watchedClassName}"
           type="button"
           >Mark as watched</button>
         <button
@@ -68,7 +68,7 @@ export const getMovieTemplate = (movie, user) => {
             film-card__controls-item
             button
             film-card__controls-item--favorite
-            ${isFavorite ? activeControlButtonClassName : ''}"
+            ${favoriteClassName}"
             type="button"
           >Mark as favorite</button>
       </div>

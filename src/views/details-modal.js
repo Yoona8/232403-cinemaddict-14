@@ -3,18 +3,22 @@ import {
   formatDuration,
   formatCommentDate
 } from '../helpers/helpers';
+import {EMOJIS} from '../helpers/consts';
 
 const getGenresTemplate = (genres) => {
   const label = genres.length === 1 ? 'Genre' : 'Genres';
+
   const genresTemplate = genres.map((genre) => {
     return `<span class="film-details__genre">${genre}</span>`;
   }).join('');
 
   return `
-    <td class="film-details__term">${label}</td>
-    <td class="film-details__cell">
-      ${genresTemplate}
-    </td>
+    <tr class="film-details__row">
+      <td class="film-details__term">${label}</td>
+      <td class="film-details__cell">
+        ${genresTemplate}
+      </td>
+    </tr>
   `;
 };
 
@@ -50,12 +54,34 @@ const getCommentTemplate = (comment) => {
 };
 
 const getCommentsTemplate = (comments) => {
-  const commentsTemplate = comments.map((comment) => {
-    return getCommentTemplate(comment);
-  }).join('');
+  const commentsTemplate = comments
+    .map((comment) => getCommentTemplate(comment))
+    .join('');
 
   return `
     <ul class="film-details__comments-list">${commentsTemplate}</ul>
+  `;
+};
+
+const getEmojiTemplate = (emoji) => {
+  return `
+    <input
+      class="film-details__emoji-item visually-hidden"
+      name="comment-emoji"
+      type="radio"
+      id="emoji-${emoji}"
+      value="smile"
+    >
+    <label
+      class="film-details__emoji-label"
+      for="emoji-${emoji}"
+    >
+      <img
+        src="./images/emoji/${emoji}.png"
+        width="30" height="30"
+        alt="emoji-${emoji}"
+      >
+    </label>
   `;
 };
 
@@ -80,23 +106,30 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
 
   const {watched, watchlist, favorites} = user;
 
+  const emojis = EMOJIS;
   const formattedReleaseDate = formatReleaseDate(releaseDate);
   const formattedDuration = formatDuration(duration);
   const genresTemplate = genres.length === 0 ? '' : getGenresTemplate(genres);
-  const isWatched = watched.has(id);
-  const isToWatch = watchlist.has(id);
-  const isFavorite = favorites.has(id);
+  const watchedChecked = watched.has(id) ? 'checked' : '';
+  const toWatchChecked = watchlist.has(id) ? 'checked' : '';
+  const favoriteChecked = favorites.has(id) ? 'checked' : '';
+  const commentsCount = comments.size;
   const movieCommentMessages = commentMessages.filter((message) => {
     return comments.has(message.id);
   });
   const commentsTemplate = getCommentsTemplate(movieCommentMessages);
+  const emojisTemplate = emojis
+    .map((emoji) => getEmojiTemplate(emoji))
+    .join('');
 
   return `
     <section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="film-details__top-container">
           <div class="film-details__close">
-            <button class="film-details__close-btn" type="button">close</button>
+            <button class="film-details__close-btn" type="button">
+              close
+            </button>
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
@@ -130,21 +163,15 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">
-                    ${writers}
-                  </td>
+                  <td class="film-details__cell">${writers}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">
-                    ${actors}
-                  </td>
+                  <td class="film-details__cell">${actors}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">
-                    ${formattedReleaseDate}
-                  </td>
+                  <td class="film-details__cell">${formattedReleaseDate}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
@@ -154,9 +181,7 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
                   <td class="film-details__term">Country</td>
                   <td class="film-details__cell">${country}</td>
                 </tr>
-                <tr class="film-details__row">
-                  ${genresTemplate}
-                </tr>
+                ${genresTemplate}
               </table>
 
               <p class="film-details__film-description">
@@ -171,7 +196,7 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
               class="film-details__control-input visually-hidden"
               id="watchlist"
               name="watchlist"
-              ${isToWatch ? 'checked' : ''}
+              ${toWatchChecked}
             >
             <label
               for="watchlist"
@@ -185,7 +210,7 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
               class="film-details__control-input visually-hidden"
               id="watched"
               name="watched"
-              ${isWatched ? 'checked' : ''}
+              ${watchedChecked}
             >
             <label
               for="watched"
@@ -199,7 +224,7 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
               class="film-details__control-input visually-hidden"
               id="favorite"
               name="favorite"
-              ${isFavorite ? 'checked' : ''}
+              ${favoriteChecked}
             >
             <label
               for="favorite"
@@ -215,7 +240,7 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
             <h3 class="film-details__comments-title">
               Comments
               <span class="film-details__comments-count">
-                ${comments.size}
+                ${commentsCount}
               </span>
             </h3>
 
@@ -225,29 +250,15 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
               <div class="film-details__add-emoji-label"></div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                <textarea
+                  class="film-details__comment-input"
+                  placeholder="Select reaction below and write comment here"
+                  name="comment"
+                ></textarea>
               </label>
 
               <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-                <label class="film-details__emoji-label" for="emoji-smile">
-                  <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                <label class="film-details__emoji-label" for="emoji-sleeping">
-                  <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-                <label class="film-details__emoji-label" for="emoji-puke">
-                  <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-                <label class="film-details__emoji-label" for="emoji-angry">
-                  <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-                </label>
+                ${emojisTemplate}
               </div>
             </div>
           </section>

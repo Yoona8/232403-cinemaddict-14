@@ -1,4 +1,5 @@
 import {getRandomInteger} from '../helpers/helpers';
+import {EMOJIS} from '../helpers/consts';
 
 const COMMENTS = [
   'Best movie ever!',
@@ -8,15 +9,8 @@ const COMMENTS = [
   'Oh so dark and atmospheric! I love those dark tales and they are perfect for a cold winter evening when it\'s snowing outside (you know those extremely quite evenings in the countryside, classical white christmas-ish atmosphere).',
 ];
 
-const emojiToImagePath = {
-  'smile': '',
-  'sleeping': '',
-  'puke': '',
-  'angry': '',
-};
-
 const getComment = (id) => {
-  const emojis = Object.keys(emojiToImagePath);
+  const emojis = EMOJIS;
 
   return {
     id,
