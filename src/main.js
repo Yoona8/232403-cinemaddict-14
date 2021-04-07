@@ -1,10 +1,15 @@
-import {getUserTemplate} from './views/user-view';
-import {getMenuTemplate} from './views/menu-view';
-import {getSortingTemplate} from './views/sorting-view';
-import {getMoviesTemplate} from './views/movies-view';
-import {getMovieTemplate} from './views/movie-view';
-import {getShowMoreButtonTemplate} from './views/show-more-button-view';
-import {getMoviesTotalTemplate} from './views/movies-total-view';
+import {getUserTemplate} from './views/user';
+import {getMenuTemplate} from './views/menu';
+import {getSortingTemplate} from './views/sorting';
+import {getMoviesTemplate} from './views/movies';
+import {getMovieTemplate} from './views/movie';
+import {getShowMoreButtonTemplate} from './views/show-more-button';
+import {getMoviesTotalTemplate} from './views/movies-total';
+import {getMovies} from './mocks/movies';
+import {getUser} from './mocks/user';
+import {getComments} from './mocks/comments';
+import {getDetailsModalTemplate} from './views/details-modal';
+import {getFilters} from './mocks/filters';
 
 const RenderPosition = {
   BEFORE_END: 'beforeend',
@@ -12,12 +17,18 @@ const RenderPosition = {
 };
 
 const MoviesCount = {
-  ALL: 5,
+  ALL: 20,
   TOP_RATED: 2,
   COMMENTED: 2,
+  PER_STEP: 5,
 };
 
-const movies = new Array(MoviesCount.ALL).fill('');
+const COMMENTS_COUNT = 10;
+
+const comments = getComments(COMMENTS_COUNT);
+const movies = getMovies(MoviesCount.ALL, comments);
+const user = getUser(movies);
+const filters = getFilters(movies, user);
 
 const render = (
   container,
@@ -29,30 +40,61 @@ const render = (
 
 const headerElement = document.querySelector('.header');
 
-render(headerElement, getUserTemplate());
+render(headerElement, getUserTemplate(user));
 
 const mainElement = document.querySelector('.main');
 
-render(mainElement, getMenuTemplate());
+render(mainElement, getMenuTemplate(filters));
 render(mainElement, getSortingTemplate());
 render(mainElement, getMoviesTemplate());
 
 const moviesElement = mainElement.querySelector('[data-movies]');
 
-movies.forEach(() => render(moviesElement, getMovieTemplate()));
-
-render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
+movies.slice(0, MoviesCount.PER_STEP)
+  .forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
 
 const topRatedElement = mainElement.querySelector('[data-top-rated]');
 
-movies.slice(0, MoviesCount.COMMENTED)
-  .forEach(() => render(topRatedElement, getMovieTemplate()));
+movies.slice()
+  .sort((a, b) => b.rating - a.rating)
+  .slice(0, MoviesCount.TOP_RATED)
+  .forEach((movie) => render(topRatedElement, getMovieTemplate(movie, user)));
 
 const mostCommentedElement = mainElement.querySelector('[data-commented]');
 
-movies.slice(0, MoviesCount.COMMENTED)
-  .forEach(() => render(mostCommentedElement, getMovieTemplate()));
+movies.slice()
+  .sort((a, b) => b.comments.length - a.comments.length)
+  .slice(0, MoviesCount.COMMENTED)
+  .forEach((movie) => {
+    render(mostCommentedElement, getMovieTemplate(movie, user));
+  });
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
-render(moviesTotalElement, getMoviesTotalTemplate());
+render(moviesTotalElement, getMoviesTotalTemplate(movies.length));
+render(document.body, getDetailsModalTemplate(movies[0], user, comments));
+
+if (movies.length > MoviesCount.PER_STEP) {
+  let renderedMoviesCount = MoviesCount.PER_STEP;
+
+  render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
+
+  const loadMoreButtonElement = mainElement
+    .querySelector('.films-list__show-more');
+
+  const onLoadMoreButtonClick = (evt) => {
+    evt.preventDefault();
+
+    movies
+      .slice(renderedMoviesCount, renderedMoviesCount + MoviesCount.PER_STEP)
+      .forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
+
+    renderedMoviesCount += MoviesCount.PER_STEP;
+
+    if (renderedMoviesCount >= movies.length) {
+      loadMoreButtonElement.remove();
+    }
+  };
+
+  loadMoreButtonElement.addEventListener('click', onLoadMoreButtonClick);
+}
