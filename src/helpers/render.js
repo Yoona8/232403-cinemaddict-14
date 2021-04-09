@@ -5,7 +5,7 @@ const RenderPosition = {
 
 const render = (container, elementToRender, position) => {
   const element = typeof elementToRender === 'string'
-    ? getElement(elementToRender)
+    ? getElementFromTemplate(elementToRender)
     : elementToRender;
 
   switch (position) {
@@ -18,7 +18,7 @@ const render = (container, elementToRender, position) => {
   }
 };
 
-const getElement = (template) => {
+const getElementFromTemplate = (template) => {
   const element = document.createElement('div');
 
   element.innerHTML = template;
@@ -26,4 +26,4 @@ const getElement = (template) => {
   return element.firstElementChild;
 };
 
-export {render, RenderPosition};
+export {render, RenderPosition, getElementFromTemplate};

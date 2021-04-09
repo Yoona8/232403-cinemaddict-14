@@ -4,7 +4,7 @@ import {getSortingTemplate} from './views/sorting';
 import {getMoviesTemplate} from './views/movies';
 import {getMovieTemplate} from './views/movie';
 import {getShowMoreButtonTemplate} from './views/show-more-button';
-import {getMoviesTotalTemplate} from './views/movies-total';
+import MoviesTotalView from './views/movies-total';
 import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
@@ -58,7 +58,7 @@ movies.slice()
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
-render(moviesTotalElement, getMoviesTotalTemplate(movies.length));
+render(moviesTotalElement, new MoviesTotalView(movies.length).getElement());
 
 if (movies.length > MoviesCount.PER_STEP) {
   let renderedMoviesCount = MoviesCount.PER_STEP;
