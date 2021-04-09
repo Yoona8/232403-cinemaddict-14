@@ -3,7 +3,7 @@ import MenuView from './views/menu';
 import {getSortingTemplate} from './views/sorting';
 import {getMoviesTemplate} from './views/movies';
 import {getMovieTemplate} from './views/movie';
-import {getShowMoreButtonTemplate} from './views/show-more-button';
+import ShowMoreButtonView from './views/show-more-button';
 import MoviesTotalView from './views/movies-total';
 import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
@@ -63,7 +63,11 @@ render(moviesTotalElement, new MoviesTotalView(movies.length).getElement());
 if (movies.length > MoviesCount.PER_STEP) {
   let renderedMoviesCount = MoviesCount.PER_STEP;
 
-  render(moviesElement, getShowMoreButtonTemplate(), RenderPosition.AFTER_END);
+  render(
+    moviesElement,
+    new ShowMoreButtonView().getElement(),
+    RenderPosition.AFTER_END,
+  );
 
   const loadMoreButtonElement = mainElement
     .querySelector('.films-list__show-more');
