@@ -1,4 +1,4 @@
-import {getUserTemplate} from './views/user';
+import UserView from './views/user';
 import {getMenuTemplate} from './views/menu';
 import {getSortingTemplate} from './views/sorting';
 import {getMoviesTemplate} from './views/movies';
@@ -27,7 +27,7 @@ const filters = getFilters(movies, user);
 
 const headerElement = document.querySelector('.header');
 
-render(headerElement, getUserTemplate(user));
+render(headerElement, new UserView(user).getElement());
 
 const mainElement = document.querySelector('.main');
 

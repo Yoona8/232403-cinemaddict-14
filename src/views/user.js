@@ -1,4 +1,6 @@
-export const getUserTemplate = (user = {}) => {
+import {getElementFromTemplate} from '../helpers/render';
+
+const getUserTemplate = (user) => {
   const {
     name = 'Unknown',
     rank = null,
@@ -19,3 +21,26 @@ export const getUserTemplate = (user = {}) => {
     </section>
   `.trim();
 };
+
+export default class User {
+  constructor(user = {}) {
+    this._user = user;
+    this._element = null;
+  }
+
+  _getTemplate() {
+    return getUserTemplate(this._user);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = getElementFromTemplate(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
