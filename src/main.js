@@ -1,5 +1,5 @@
 import UserView from './views/user';
-import {getMenuTemplate} from './views/menu';
+import MenuView from './views/menu';
 import {getSortingTemplate} from './views/sorting';
 import {getMoviesTemplate} from './views/movies';
 import {getMovieTemplate} from './views/movie';
@@ -31,7 +31,7 @@ render(headerElement, new UserView(user).getElement());
 
 const mainElement = document.querySelector('.main');
 
-render(mainElement, getMenuTemplate(filters));
+render(mainElement, new MenuView(filters).getElement());
 render(mainElement, getSortingTemplate());
 render(mainElement, getMoviesTemplate());
 
