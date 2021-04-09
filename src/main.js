@@ -8,7 +8,6 @@ import {getMoviesTotalTemplate} from './views/movies-total';
 import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
-import {getDetailsModalTemplate} from './views/details-modal';
 import {getFilters} from './mocks/filters';
 import {render, RenderPosition} from './helpers/render';
 
@@ -60,7 +59,6 @@ movies.slice()
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
 render(moviesTotalElement, getMoviesTotalTemplate(movies.length));
-render(document.body, getDetailsModalTemplate(movies[0], user, comments));
 
 if (movies.length > MoviesCount.PER_STEP) {
   let renderedMoviesCount = MoviesCount.PER_STEP;

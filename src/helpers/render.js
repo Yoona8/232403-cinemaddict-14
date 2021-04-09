@@ -3,12 +3,27 @@ const RenderPosition = {
   AFTER_END: 'afterend',
 };
 
-const render = (
-  container,
-  template,
-  position = RenderPosition.BEFORE_END,
-) => {
-  container.insertAdjacentHTML(position, template);
+const render = (container, elementToRender, position) => {
+  const element = typeof elementToRender === 'string'
+    ? getElement(elementToRender)
+    : elementToRender;
+
+  switch (position) {
+    case RenderPosition.AFTER_END:
+      container.after(element);
+      break;
+    case RenderPosition.BEFORE_END:
+    default:
+      container.append(element);
+  }
+};
+
+const getElement = (template) => {
+  const element = document.createElement('div');
+
+  element.innerHTML = template;
+
+  return element.firstElementChild;
 };
 
 export {render, RenderPosition};
