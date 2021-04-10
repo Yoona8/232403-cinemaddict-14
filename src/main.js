@@ -1,6 +1,6 @@
 import UserView from './views/user';
 import MenuView from './views/menu';
-import {getSortingTemplate} from './views/sorting';
+import SortingView from './views/sorting';
 import MoviesView from './views/movies';
 import MovieView from './views/movie';
 import ShowMoreButtonView from './views/show-more-button';
@@ -32,7 +32,7 @@ render(headerElement, new UserView(user).getElement());
 const mainElement = document.querySelector('.main');
 
 render(mainElement, new MenuView(filters).getElement());
-render(mainElement, getSortingTemplate());
+render(mainElement, new SortingView().getElement());
 render(mainElement, new MoviesView().getElement());
 
 const moviesElement = mainElement.querySelector('[data-movies]');
