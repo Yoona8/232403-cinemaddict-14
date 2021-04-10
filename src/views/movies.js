@@ -1,4 +1,6 @@
-export const getMoviesTemplate = () => {
+import {getElementFromTemplate} from '../helpers/render';
+
+const getMoviesTemplate = () => {
   return `
     <section class="films">
       <section class="films-list">
@@ -24,3 +26,25 @@ export const getMoviesTemplate = () => {
     </section>
   `.trim();
 };
+
+export default class Movies {
+  constructor() {
+    this._element = null;
+  }
+
+  _getTemplate() {
+    return getMoviesTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = getElementFromTemplate(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
