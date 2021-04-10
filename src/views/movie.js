@@ -96,6 +96,20 @@ export default class Movie {
     return this._element;
   }
 
+  setOnDetailsClick(cb) {
+    const onDetailsClick = (evt) => {
+      evt.preventDefault();
+      cb();
+    };
+
+    this.getElement().querySelector('.film-card__poster')
+      .addEventListener('click', onDetailsClick);
+    this.getElement().querySelector('.film-card__title')
+      .addEventListener('click', onDetailsClick);
+    this.getElement().querySelector('.film-card__comments')
+      .addEventListener('click', onDetailsClick);
+  }
+
   removeElement() {
     this._element = null;
   }

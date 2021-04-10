@@ -10,15 +10,17 @@ import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
 import {getFilters} from './mocks/filters';
 import {render, RenderPosition} from './helpers/render';
+import DetailsModal from './views/details-modal';
 
 const MoviesCount = {
-  ALL: 20,
+  ALL: 2,
   TOP_RATED: 2,
   COMMENTED: 2,
   PER_STEP: 5,
 };
 
 const COMMENTS_COUNT = 10;
+const BODY_NO_SCROLL_CLASS_NAME = 'hide-overflow';
 
 const comments = getComments(COMMENTS_COUNT);
 const movies = getMovies(MoviesCount.ALL, comments);
@@ -37,9 +39,26 @@ render(mainElement, new MoviesView().getElement());
 
 const moviesElement = mainElement.querySelector('[data-movies]');
 
+const onDetailsOpen = (movie) => {
+  const detailsModalView = new DetailsModal(movie, user, comments);
+
+  const onDetailsClose = () => {
+    document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
+  };
+
+  detailsModalView.setOnClose(onDetailsClose);
+  document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
+  render(document.body, detailsModalView.getElement());
+};
+
 movies.slice(0, MoviesCount.PER_STEP)
   .forEach((movie) => {
-    render(moviesElement, new MovieView(movie, user).getElement());
+    const movieView = new MovieView(movie, user);
+
+    movieView.setOnDetailsClick(() => {
+      onDetailsOpen(movie);
+    });
+    render(moviesElement, movieView.getElement());
   });
 
 const topRatedElement = mainElement.querySelector('[data-top-rated]');
