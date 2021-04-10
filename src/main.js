@@ -2,7 +2,7 @@ import UserView from './views/user';
 import MenuView from './views/menu';
 import {getSortingTemplate} from './views/sorting';
 import {getMoviesTemplate} from './views/movies';
-import {getMovieTemplate} from './views/movie';
+import MovieView from './views/movie';
 import ShowMoreButtonView from './views/show-more-button';
 import MoviesTotalView from './views/movies-total';
 import {getMovies} from './mocks/movies';
@@ -38,14 +38,18 @@ render(mainElement, getMoviesTemplate());
 const moviesElement = mainElement.querySelector('[data-movies]');
 
 movies.slice(0, MoviesCount.PER_STEP)
-  .forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
+  .forEach((movie) => {
+    render(moviesElement, new MovieView(movie, user).getElement());
+  });
 
 const topRatedElement = mainElement.querySelector('[data-top-rated]');
 
 movies.slice()
   .sort((a, b) => b.rating - a.rating)
   .slice(0, MoviesCount.TOP_RATED)
-  .forEach((movie) => render(topRatedElement, getMovieTemplate(movie, user)));
+  .forEach((movie) => {
+    render(topRatedElement, new MovieView(movie, user).getElement());
+  });
 
 const mostCommentedElement = mainElement.querySelector('[data-commented]');
 
@@ -53,7 +57,7 @@ movies.slice()
   .sort((a, b) => b.comments.length - a.comments.length)
   .slice(0, MoviesCount.COMMENTED)
   .forEach((movie) => {
-    render(mostCommentedElement, getMovieTemplate(movie, user));
+    render(mostCommentedElement, new MovieView(movie, user).getElement());
   });
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
@@ -77,7 +81,9 @@ if (movies.length > MoviesCount.PER_STEP) {
 
     movies
       .slice(renderedMoviesCount, renderedMoviesCount + MoviesCount.PER_STEP)
-      .forEach((movie) => render(moviesElement, getMovieTemplate(movie, user)));
+      .forEach((movie) => {
+        render(moviesElement, new MovieView(movie, user).getElement());
+      });
 
     renderedMoviesCount += MoviesCount.PER_STEP;
 
