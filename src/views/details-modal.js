@@ -4,6 +4,7 @@ import {
   formatCommentDate
 } from '../helpers/helpers';
 import {EMOJIS} from '../helpers/consts';
+import {getElementFromTemplate} from '../helpers/render';
 
 const getGenresTemplate = (genres) => {
   const label = genres.length === 1 ? 'Genre' : 'Genres';
@@ -85,7 +86,7 @@ const getEmojiTemplate = (emoji) => {
   `;
 };
 
-export const getDetailsModalTemplate = (movie, user, commentMessages) => {
+const getDetailsModalTemplate = (movie, user, commentMessages) => {
   const {
     id,
     poster,
@@ -267,3 +268,28 @@ export const getDetailsModalTemplate = (movie, user, commentMessages) => {
     </section>
   `.trim();
 };
+
+export default class DetailsModal {
+  constructor(movie, user = {}, comments = new Set()) {
+    this._movie = movie;
+    this._user = user;
+    this._comments = comments;
+    this._element = null;
+  }
+
+  _getTemplate() {
+    return getDetailsModalTemplate(this._movie, this._user, this._comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = getElementFromTemplate(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
