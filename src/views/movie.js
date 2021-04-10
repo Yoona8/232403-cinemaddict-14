@@ -1,8 +1,9 @@
 import {getYear, formatDuration, trimText} from '../helpers/helpers';
+import {getElementFromTemplate} from '../helpers/render';
 
 const DESCRIPTION_LIMIT = 140;
 
-export const getMovieTemplate = (movie, user) => {
+const getMovieTemplate = (movie, user) => {
   const {
     id,
     title,
@@ -75,3 +76,41 @@ export const getMovieTemplate = (movie, user) => {
     </article>
   `.trim();
 };
+
+export default class Movie {
+  constructor(movie, user = {}) {
+    this._movie = movie;
+    this._user = user;
+    this._element = null;
+  }
+
+  _getTemplate() {
+    return getMovieTemplate(this._movie, this._user);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = getElementFromTemplate(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  setOnDetailsOpen(cb) {
+    const onDetailsClick = (evt) => {
+      evt.preventDefault();
+      cb();
+    };
+
+    this.getElement().querySelector('.film-card__poster')
+      .addEventListener('click', onDetailsClick);
+    this.getElement().querySelector('.film-card__title')
+      .addEventListener('click', onDetailsClick);
+    this.getElement().querySelector('.film-card__comments')
+      .addEventListener('click', onDetailsClick);
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

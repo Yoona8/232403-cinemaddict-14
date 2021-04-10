@@ -1,3 +1,5 @@
+import {getElementFromTemplate} from '../helpers/render';
+
 const getFilterTemplate = (filter, currentFilterName = '') => {
   const {name, count} = filter;
   const url = `#${name.toLowerCase()}`;
@@ -12,7 +14,7 @@ const getFilterTemplate = (filter, currentFilterName = '') => {
   `;
 };
 
-export const getMenuTemplate = (filters) => {
+const getMenuTemplate = (filters) => {
   const filtersTemplate = filters
     .map((filter) => getFilterTemplate(filter))
     .join('');
@@ -30,3 +32,26 @@ export const getMenuTemplate = (filters) => {
     </nav>
   `.trim();
 };
+
+export default class Menu {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  _getTemplate() {
+    return getMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = getElementFromTemplate(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
