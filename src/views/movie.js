@@ -96,7 +96,7 @@ export default class Movie {
     return this._element;
   }
 
-  setOnDetailsClick(cb) {
+  setOnDetailsOpen(cb) {
     const onDetailsClick = (evt) => {
       evt.preventDefault();
       cb();

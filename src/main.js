@@ -13,7 +13,7 @@ import {render, RenderPosition} from './helpers/render';
 import DetailsModal from './views/details-modal';
 
 const MoviesCount = {
-  ALL: 2,
+  ALL: 20,
   TOP_RATED: 2,
   COMMENTED: 2,
   PER_STEP: 5,
@@ -37,47 +37,47 @@ render(mainElement, new MenuView(filters).getElement());
 render(mainElement, new SortingView().getElement());
 render(mainElement, new MoviesView().getElement());
 
-const moviesElement = mainElement.querySelector('[data-movies]');
-
-const onDetailsOpen = (movie) => {
+const openDetails = (movie) => {
   const detailsModalView = new DetailsModal(movie, user, comments);
 
-  const onDetailsClose = () => {
+  const closeDetails = () => {
     document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
   };
 
-  detailsModalView.setOnClose(onDetailsClose);
+  detailsModalView.setOnClose(closeDetails);
   document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
   render(document.body, detailsModalView.getElement());
 };
 
-movies.slice(0, MoviesCount.PER_STEP)
-  .forEach((movie) => {
-    const movieView = new MovieView(movie, user);
+const onDetailsOpen = (movie) => {
+  openDetails(movie);
+};
 
-    movieView.setOnDetailsClick(() => {
-      onDetailsOpen(movie);
-    });
-    render(moviesElement, movieView.getElement());
-  });
+const renderMovie = (container, movie) => {
+  const movieView = new MovieView(movie, user);
+
+  movieView.setOnDetailsOpen(() => onDetailsOpen(movie));
+  render(container, movieView.getElement());
+};
+
+const moviesElement = mainElement.querySelector('[data-movies]');
+
+movies.slice(0, MoviesCount.PER_STEP)
+  .forEach((movie) => renderMovie(moviesElement, movie));
 
 const topRatedElement = mainElement.querySelector('[data-top-rated]');
 
 movies.slice()
   .sort((a, b) => b.rating - a.rating)
   .slice(0, MoviesCount.TOP_RATED)
-  .forEach((movie) => {
-    render(topRatedElement, new MovieView(movie, user).getElement());
-  });
+  .forEach((movie) => renderMovie(topRatedElement, movie));
 
 const mostCommentedElement = mainElement.querySelector('[data-commented]');
 
 movies.slice()
   .sort((a, b) => b.comments.length - a.comments.length)
   .slice(0, MoviesCount.COMMENTED)
-  .forEach((movie) => {
-    render(mostCommentedElement, new MovieView(movie, user).getElement());
-  });
+  .forEach((movie) => renderMovie(mostCommentedElement, movie));
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
@@ -100,9 +100,7 @@ if (movies.length > MoviesCount.PER_STEP) {
 
     movies
       .slice(renderedMoviesCount, renderedMoviesCount + MoviesCount.PER_STEP)
-      .forEach((movie) => {
-        render(moviesElement, new MovieView(movie, user).getElement());
-      });
+      .forEach((movie) => renderMovie(moviesElement, movie));
 
     renderedMoviesCount += MoviesCount.PER_STEP;
 
