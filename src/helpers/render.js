@@ -3,11 +3,7 @@ const RenderPosition = {
   AFTER_END: 'afterend',
 };
 
-const render = (container, elementToRender, position) => {
-  const element = typeof elementToRender === 'string'
-    ? getElementFromTemplate(elementToRender)
-    : elementToRender;
-
+const render = (container, element, position) => {
   switch (position) {
     case RenderPosition.AFTER_END:
       container.after(element);
