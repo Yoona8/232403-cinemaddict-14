@@ -11,6 +11,7 @@ import {getComments} from './mocks/comments';
 import {getFilters} from './mocks/filters';
 import {render, RenderPosition} from './helpers/render';
 import DetailsModal from './views/details-modal';
+import {checkEscKeyDown} from './helpers/helpers';
 
 const MoviesCount = {
   ALL: 20,
@@ -42,9 +43,22 @@ const openDetails = (movie) => {
 
   const closeDetails = () => {
     document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
+    document.removeEventListener('keydown', onDetailsEscKeyDown);
+    detailsModalView.removeElement();
   };
 
-  detailsModalView.setOnClose(closeDetails);
+  const onDetailsClose = () => {
+    closeDetails();
+  };
+
+  const onDetailsEscKeyDown = (evt) => {
+    if (checkEscKeyDown(evt.key)) {
+      closeDetails();
+    }
+  };
+
+  detailsModalView.addCloseListener(onDetailsClose);
+  document.addEventListener('keydown', onDetailsEscKeyDown);
   document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
   render(document.body, detailsModalView.getElement());
 };
@@ -56,7 +70,7 @@ const onDetailsOpen = (movie) => {
 const renderMovie = (container, movie) => {
   const movieView = new MovieView(movie, user);
 
-  movieView.setOnDetailsOpen(() => onDetailsOpen(movie));
+  movieView.addOpenDetailsListener(() => onDetailsOpen(movie));
   render(container, movieView.getElement());
 };
 
