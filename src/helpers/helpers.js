@@ -37,11 +37,18 @@ const trimText = (text, limit) => {
   return text;
 };
 
+const checkEscKeyDown = (key) => {
+  const pressedKey = key.toLowerCase();
+
+  return pressedKey === 'escape' || pressedKey === 'esc';
+};
+
 export {
   getRandomInteger,
   getYear,
   formatDuration,
   formatReleaseDate,
   formatCommentDate,
-  trimText
+  trimText,
+  checkEscKeyDown
 };

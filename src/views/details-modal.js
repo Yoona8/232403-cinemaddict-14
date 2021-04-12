@@ -289,14 +289,13 @@ export default class DetailsModal {
     return this._element;
   }
 
-  setOnClose(cb) {
+  addCloseListener(cb) {
     const closeButtonElement = this.getElement()
       .querySelector('.film-details__close-btn');
 
     const onClose = (evt) => {
       evt.preventDefault();
       closeButtonElement.removeEventListener('click', onClose);
-      this.removeElement();
       cb();
     };
 
