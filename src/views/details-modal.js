@@ -128,7 +128,7 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
       <form class="film-details__inner" action="" method="get">
         <div class="film-details__top-container">
           <div class="film-details__close">
-            <button class="film-details__close-btn" type="button">
+            <button class="film-details__close-btn" type="button" data-close>
               close
             </button>
           </div>
@@ -276,22 +276,24 @@ export default class DetailsModal extends AbstractView {
     this._movie = movie;
     this._user = user;
     this._comments = comments;
+
+    this._closeClickHandler = this._closeClickHandler.bind(this);
   }
 
   _getTemplate() {
     return getDetailsModalTemplate(this._movie, this._user, this._comments);
   }
 
-  addCloseListener(cb) {
-    const closeButtonElement = this.getElement()
-      .querySelector('.film-details__close-btn');
+  _closeClickHandler(evt) {
+    evt.preventDefault();
+    evt.target.removeEventListener('click', this._closeClickHandler);
+    this._callback.closeClickHandler();
+  }
 
-    const onClose = (evt) => {
-      evt.preventDefault();
-      closeButtonElement.removeEventListener('click', onClose);
-      cb();
-    };
+  addCloseClickHandler(cb) {
+    this._callback.closeClickHandler = cb;
 
-    closeButtonElement.addEventListener('click', onClose);
+    this.getElement().querySelector('[data-close]')
+      .addEventListener('click', this._closeClickHandler);
   }
 }

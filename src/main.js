@@ -46,34 +46,27 @@ const renderMovies = () => {
 
     const closeDetails = () => {
       document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
-      document.removeEventListener('keydown', onDetailsEscKeyDown);
+      document.removeEventListener('keydown', detailsEscKeyDownHandler);
       detailsModalView.removeElement();
     };
 
-    const onDetailsClose = () => {
-      closeDetails();
-    };
+    detailsModalView.addCloseClickHandler(() => closeDetails());
 
-    const onDetailsEscKeyDown = (evt) => {
+    const detailsEscKeyDownHandler = (evt) => {
       if (checkEscKeyDown(evt.key)) {
         closeDetails();
       }
     };
 
-    detailsModalView.addCloseListener(onDetailsClose);
-    document.addEventListener('keydown', onDetailsEscKeyDown);
+    document.addEventListener('keydown', detailsEscKeyDownHandler);
     document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
     render(document.body, detailsModalView);
-  };
-
-  const onDetailsOpen = (movie) => {
-    openDetails(movie);
   };
 
   const renderMovie = (container, movie) => {
     const movieView = new MovieView(movie, user);
 
-    movieView.addOpenDetailsListener(() => onDetailsOpen(movie));
+    movieView.addDetailsOpenClickHandler(() => openDetails(movie));
     render(container, movieView);
   };
 
@@ -97,16 +90,10 @@ const renderMovies = () => {
     .forEach((movie) => renderMovie(mostCommentedElement, movie));
 
   if (movies.length > MoviesCount.PER_STEP) {
+    const showMoreButtonView = new ShowMoreButtonView();
     let renderedMoviesCount = MoviesCount.PER_STEP;
 
-    render(moviesElement, new ShowMoreButtonView(), RenderPosition.AFTER_END);
-
-    const loadMoreButtonElement = mainElement
-      .querySelector('.films-list__show-more');
-
-    const onLoadMoreButtonClick = (evt) => {
-      evt.preventDefault();
-
+    const showMoreButtonClickHandler = () => {
       movies
         .slice(renderedMoviesCount, renderedMoviesCount + MoviesCount.PER_STEP)
         .forEach((movie) => renderMovie(moviesElement, movie));
@@ -114,11 +101,12 @@ const renderMovies = () => {
       renderedMoviesCount += MoviesCount.PER_STEP;
 
       if (renderedMoviesCount >= movies.length) {
-        loadMoreButtonElement.remove();
+        showMoreButtonView.removeElement();
       }
     };
 
-    loadMoreButtonElement.addEventListener('click', onLoadMoreButtonClick);
+    showMoreButtonView.addClickHandler(showMoreButtonClickHandler);
+    render(moviesElement, showMoreButtonView, RenderPosition.AFTER_END);
   }
 };
 
