@@ -31,15 +31,15 @@ const filters = getFilters(movies, user);
 
 const headerElement = document.querySelector('.header');
 
-render(headerElement, new UserView(user).getElement());
+render(headerElement, new UserView(user));
 
 const mainElement = document.querySelector('.main');
 
-render(mainElement, new MenuView(filters).getElement());
-render(mainElement, new SortingView().getElement());
+render(mainElement, new MenuView(filters));
+render(mainElement, new SortingView());
 
 const renderMovies = () => {
-  render(mainElement, new MoviesView().getElement());
+  render(mainElement, new MoviesView());
 
   const openDetails = (movie) => {
     const detailsModalView = new DetailsModalView(movie, user, comments);
@@ -63,7 +63,7 @@ const renderMovies = () => {
     detailsModalView.addCloseListener(onDetailsClose);
     document.addEventListener('keydown', onDetailsEscKeyDown);
     document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
-    render(document.body, detailsModalView.getElement());
+    render(document.body, detailsModalView);
   };
 
   const onDetailsOpen = (movie) => {
@@ -74,7 +74,7 @@ const renderMovies = () => {
     const movieView = new MovieView(movie, user);
 
     movieView.addOpenDetailsListener(() => onDetailsOpen(movie));
-    render(container, movieView.getElement());
+    render(container, movieView);
   };
 
   const moviesElement = mainElement.querySelector('[data-movies]');
@@ -99,11 +99,7 @@ const renderMovies = () => {
   if (movies.length > MoviesCount.PER_STEP) {
     let renderedMoviesCount = MoviesCount.PER_STEP;
 
-    render(
-      moviesElement,
-      new ShowMoreButtonView().getElement(),
-      RenderPosition.AFTER_END,
-    );
+    render(moviesElement, new ShowMoreButtonView(), RenderPosition.AFTER_END);
 
     const loadMoreButtonElement = mainElement
       .querySelector('.films-list__show-more');
@@ -127,11 +123,11 @@ const renderMovies = () => {
 };
 
 if (movies.length === 0) {
-  render(mainElement, new NoMoviesView().getElement());
+  render(mainElement, new NoMoviesView());
 } else {
   renderMovies();
 }
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
-render(moviesTotalElement, new MoviesTotalView(movies.length).getElement());
+render(moviesTotalElement, new MoviesTotalView(movies.length));

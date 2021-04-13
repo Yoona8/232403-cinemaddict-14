@@ -1,9 +1,16 @@
+import AbstractView from '../views/abstract';
+
 const RenderPosition = {
   BEFORE_END: 'beforeend',
   AFTER_END: 'afterend',
 };
 
 const render = (container, element, position) => {
+  container = container instanceof AbstractView
+    ? container.getElement()
+    : container;
+  element = element instanceof AbstractView ? element.getElement() : element;
+
   switch (position) {
     case RenderPosition.AFTER_END:
       container.after(element);
