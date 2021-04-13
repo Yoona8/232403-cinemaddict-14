@@ -1,4 +1,4 @@
-import {getElementFromTemplate} from '../helpers/render';
+import AbstractView from './abstract';
 
 const getUserTemplate = (user) => {
   const {
@@ -22,25 +22,14 @@ const getUserTemplate = (user) => {
   `.trim();
 };
 
-export default class User {
+export default class User extends AbstractView {
   constructor(user = {}) {
+    super();
+
     this._user = user;
-    this._element = null;
   }
 
   _getTemplate() {
     return getUserTemplate(this._user);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

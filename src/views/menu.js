@@ -1,4 +1,4 @@
-import {getElementFromTemplate} from '../helpers/render';
+import AbstractView from './abstract';
 
 const getFilterTemplate = (filter, currentFilterName = '') => {
   const {name, count} = filter;
@@ -33,25 +33,14 @@ const getMenuTemplate = (filters) => {
   `.trim();
 };
 
-export default class Menu {
+export default class Menu extends AbstractView {
   constructor(filters) {
+    super();
+
     this._filters = filters;
-    this._element = null;
   }
 
   _getTemplate() {
     return getMenuTemplate(this._filters);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

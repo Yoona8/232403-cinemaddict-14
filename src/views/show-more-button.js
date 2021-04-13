@@ -1,4 +1,4 @@
-import {getElementFromTemplate} from '../helpers/render';
+import AbstractView from './abstract';
 
 const getShowMoreButtonTemplate = () => {
   return `
@@ -6,24 +6,8 @@ const getShowMoreButtonTemplate = () => {
   `.trim();
 };
 
-export default class ShowMoreButton {
-  constructor() {
-    this._element = null;
-  }
-
+export default class ShowMoreButton extends AbstractView {
   _getTemplate() {
     return getShowMoreButtonTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -9,6 +9,7 @@ export default class Abstract {
     this._element = null;
   }
 
+  /** @return (string | undefined) */
   _getTemplate() {
     throw new Error('Abstract method is not implemented: _getTemplate');
   }

@@ -1,5 +1,5 @@
+import AbstractView from './abstract';
 import {getYear, formatDuration, trimText} from '../helpers/helpers';
-import {getElementFromTemplate} from '../helpers/render';
 
 const DESCRIPTION_LIMIT = 140;
 
@@ -77,23 +77,16 @@ const getMovieTemplate = (movie, user) => {
   `.trim();
 };
 
-export default class Movie {
+export default class Movie extends AbstractView {
   constructor(movie, user = {}) {
+    super();
+
     this._movie = movie;
     this._user = user;
-    this._element = null;
   }
 
   _getTemplate() {
     return getMovieTemplate(this._movie, this._user);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
   }
 
   addOpenDetailsListener(cb) {
@@ -108,9 +101,5 @@ export default class Movie {
       .addEventListener('click', onDetailsClick);
     this.getElement().querySelector('.film-card__comments')
       .addEventListener('click', onDetailsClick);
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
