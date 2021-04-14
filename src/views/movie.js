@@ -100,7 +100,7 @@ export default class Movie extends AbstractView {
   addDetailsOpenClickHandler(cb) {
     this._callback.detailsOpenClickHandler = cb;
 
-    [...this.getElement().querySelectorAll('[data-details-open]')]
+    this.getElement().querySelectorAll('[data-details-open]')
       .forEach((element) => {
         element.addEventListener('click', this._detailsOpenClickHandler);
       });
