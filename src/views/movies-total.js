@@ -1,4 +1,4 @@
-import {getElementFromTemplate} from '../helpers/render';
+import AbstractView from './abstract';
 
 const getMoviesTotalTemplate = (count) => {
   return `
@@ -6,25 +6,14 @@ const getMoviesTotalTemplate = (count) => {
   `.trim();
 };
 
-export default class MoviesTotal {
+export default class MoviesTotal extends AbstractView {
   constructor(count) {
+    super();
+
     this._count = count;
-    this._element = null;
   }
 
   _getTemplate() {
     return getMoviesTotalTemplate(this._count);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

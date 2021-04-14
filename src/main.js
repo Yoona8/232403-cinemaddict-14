@@ -31,50 +31,43 @@ const filters = getFilters(movies, user);
 
 const headerElement = document.querySelector('.header');
 
-render(headerElement, new UserView(user).getElement());
+render(headerElement, new UserView(user));
 
 const mainElement = document.querySelector('.main');
 
-render(mainElement, new MenuView(filters).getElement());
-render(mainElement, new SortingView().getElement());
+render(mainElement, new MenuView(filters));
+render(mainElement, new SortingView());
 
 const renderMovies = () => {
-  render(mainElement, new MoviesView().getElement());
+  render(mainElement, new MoviesView());
 
   const openDetails = (movie) => {
     const detailsModalView = new DetailsModalView(movie, user, comments);
 
     const closeDetails = () => {
       document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
-      document.removeEventListener('keydown', onDetailsEscKeyDown);
+      document.removeEventListener('keydown', detailsEscKeyDownHandler);
       detailsModalView.removeElement();
     };
 
-    const onDetailsClose = () => {
-      closeDetails();
-    };
+    detailsModalView.addCloseClickHandler(() => closeDetails());
 
-    const onDetailsEscKeyDown = (evt) => {
+    const detailsEscKeyDownHandler = (evt) => {
       if (checkEscKeyDown(evt.key)) {
         closeDetails();
       }
     };
 
-    detailsModalView.addCloseListener(onDetailsClose);
-    document.addEventListener('keydown', onDetailsEscKeyDown);
+    document.addEventListener('keydown', detailsEscKeyDownHandler);
     document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
-    render(document.body, detailsModalView.getElement());
-  };
-
-  const onDetailsOpen = (movie) => {
-    openDetails(movie);
+    render(document.body, detailsModalView);
   };
 
   const renderMovie = (container, movie) => {
     const movieView = new MovieView(movie, user);
 
-    movieView.addOpenDetailsListener(() => onDetailsOpen(movie));
-    render(container, movieView.getElement());
+    movieView.addDetailsOpenClickHandler(() => openDetails(movie));
+    render(container, movieView);
   };
 
   const moviesElement = mainElement.querySelector('[data-movies]');
@@ -97,20 +90,10 @@ const renderMovies = () => {
     .forEach((movie) => renderMovie(mostCommentedElement, movie));
 
   if (movies.length > MoviesCount.PER_STEP) {
+    const showMoreButtonView = new ShowMoreButtonView();
     let renderedMoviesCount = MoviesCount.PER_STEP;
 
-    render(
-      moviesElement,
-      new ShowMoreButtonView().getElement(),
-      RenderPosition.AFTER_END,
-    );
-
-    const loadMoreButtonElement = mainElement
-      .querySelector('.films-list__show-more');
-
-    const onLoadMoreButtonClick = (evt) => {
-      evt.preventDefault();
-
+    const showMoreButtonClickHandler = () => {
       movies
         .slice(renderedMoviesCount, renderedMoviesCount + MoviesCount.PER_STEP)
         .forEach((movie) => renderMovie(moviesElement, movie));
@@ -118,20 +101,21 @@ const renderMovies = () => {
       renderedMoviesCount += MoviesCount.PER_STEP;
 
       if (renderedMoviesCount >= movies.length) {
-        loadMoreButtonElement.remove();
+        showMoreButtonView.removeElement();
       }
     };
 
-    loadMoreButtonElement.addEventListener('click', onLoadMoreButtonClick);
+    showMoreButtonView.addClickHandler(showMoreButtonClickHandler);
+    render(moviesElement, showMoreButtonView, RenderPosition.AFTER_END);
   }
 };
 
 if (movies.length === 0) {
-  render(mainElement, new NoMoviesView().getElement());
+  render(mainElement, new NoMoviesView());
 } else {
   renderMovies();
 }
 
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
-render(moviesTotalElement, new MoviesTotalView(movies.length).getElement());
+render(moviesTotalElement, new MoviesTotalView(movies.length));

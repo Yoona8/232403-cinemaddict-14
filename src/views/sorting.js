@@ -1,4 +1,4 @@
-import {getElementFromTemplate} from '../helpers/render';
+import AbstractView from './abstract';
 
 const getSortingTemplate = () => {
   return `
@@ -16,24 +16,8 @@ const getSortingTemplate = () => {
   `.trim();
 };
 
-export default class Sorting {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Sorting extends AbstractView {
   _getTemplate() {
     return getSortingTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

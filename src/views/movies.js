@@ -1,4 +1,4 @@
-import {getElementFromTemplate} from '../helpers/render';
+import AbstractView from './abstract';
 
 const getMoviesTemplate = () => {
   return `
@@ -27,24 +27,8 @@ const getMoviesTemplate = () => {
   `.trim();
 };
 
-export default class Movies {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Movies extends AbstractView {
   _getTemplate() {
     return getMoviesTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

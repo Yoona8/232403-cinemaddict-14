@@ -1,10 +1,10 @@
+import AbstractView from './abstract';
 import {
   formatReleaseDate,
   formatDuration,
   formatCommentDate
 } from '../helpers/helpers';
 import {EMOJIS} from '../helpers/consts';
-import {getElementFromTemplate} from '../helpers/render';
 
 const getGenresTemplate = (genres) => {
   const label = genres.length === 1 ? 'Genre' : 'Genres';
@@ -128,7 +128,7 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
       <form class="film-details__inner" action="" method="get">
         <div class="film-details__top-container">
           <div class="film-details__close">
-            <button class="film-details__close-btn" type="button">
+            <button class="film-details__close-btn" type="button" data-close>
               close
             </button>
           </div>
@@ -269,41 +269,31 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
   `.trim();
 };
 
-export default class DetailsModal {
+export default class DetailsModal extends AbstractView {
   constructor(movie, user = {}, comments = new Set()) {
+    super();
+
     this._movie = movie;
     this._user = user;
     this._comments = comments;
-    this._element = null;
+
+    this._closeClickHandler = this._closeClickHandler.bind(this);
   }
 
   _getTemplate() {
     return getDetailsModalTemplate(this._movie, this._user, this._comments);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
+  _closeClickHandler(evt) {
+    evt.preventDefault();
+    evt.target.removeEventListener('click', this._closeClickHandler);
+    this._callback.closeClickHandler();
   }
 
-  addCloseListener(cb) {
-    const closeButtonElement = this.getElement()
-      .querySelector('.film-details__close-btn');
+  addCloseClickHandler(cb) {
+    this._callback.closeClickHandler = cb;
 
-    const onClose = (evt) => {
-      evt.preventDefault();
-      closeButtonElement.removeEventListener('click', onClose);
-      cb();
-    };
-
-    closeButtonElement.addEventListener('click', onClose);
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
+    this.getElement().querySelector('[data-close]')
+      .addEventListener('click', this._closeClickHandler);
   }
 }

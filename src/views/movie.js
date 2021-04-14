@@ -1,5 +1,5 @@
+import AbstractView from './abstract';
 import {getYear, formatDuration, trimText} from '../helpers/helpers';
-import {getElementFromTemplate} from '../helpers/render';
 
 const DESCRIPTION_LIMIT = 140;
 
@@ -33,7 +33,7 @@ const getMovieTemplate = (movie, user) => {
 
   return `
     <article class="film-card">
-      <h3 class="film-card__title">${title}</h3>
+      <h3 class="film-card__title" data-details-open>${title}</h3>
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${year}</span>
@@ -44,9 +44,10 @@ const getMovieTemplate = (movie, user) => {
         src="./images/posters/${poster}"
         alt="${title}"
         class="film-card__poster"
+        data-details-open
       >
       <p class="film-card__description">${descriptionOutput}</p>
-      <a class="film-card__comments">${commentsOutput}</a>
+      <a class="film-card__comments" data-details-open>${commentsOutput}</a>
       <div class="film-card__controls">
         <button
           class="
@@ -77,40 +78,31 @@ const getMovieTemplate = (movie, user) => {
   `.trim();
 };
 
-export default class Movie {
+export default class Movie extends AbstractView {
   constructor(movie, user = {}) {
+    super();
+
     this._movie = movie;
     this._user = user;
-    this._element = null;
+
+    this._detailsOpenClickHandler = this._detailsOpenClickHandler.bind(this);
   }
 
   _getTemplate() {
     return getMovieTemplate(this._movie, this._user);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = getElementFromTemplate(this._getTemplate());
-    }
-
-    return this._element;
+  _detailsOpenClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.detailsOpenClickHandler();
   }
 
-  addOpenDetailsListener(cb) {
-    const onDetailsClick = (evt) => {
-      evt.preventDefault();
-      cb();
-    };
+  addDetailsOpenClickHandler(cb) {
+    this._callback.detailsOpenClickHandler = cb;
 
-    this.getElement().querySelector('.film-card__poster')
-      .addEventListener('click', onDetailsClick);
-    this.getElement().querySelector('.film-card__title')
-      .addEventListener('click', onDetailsClick);
-    this.getElement().querySelector('.film-card__comments')
-      .addEventListener('click', onDetailsClick);
-  }
-
-  removeElement() {
-    this._element = null;
+    this.getElement().querySelectorAll('[data-details-open]')
+      .forEach((element) => {
+        element.addEventListener('click', this._detailsOpenClickHandler);
+      });
   }
 }
