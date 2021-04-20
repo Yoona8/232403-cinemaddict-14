@@ -1,12 +1,12 @@
 import UserView from './views/user';
 import MenuView from './views/menu';
-import SortingView from './views/sorting';
 import MoviesView from './views/movies';
 import MovieView from './views/movie';
 import ShowMoreButtonView from './views/show-more-button';
 import MoviesTotalView from './views/movies-total';
 import DetailsModalView from './views/details-modal';
 import NoMoviesView from './views/no-movies';
+import MoviesPresenter from './presenters/movies';
 import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
@@ -36,7 +36,8 @@ render(headerElement, new UserView(user));
 const mainElement = document.querySelector('.main');
 
 render(mainElement, new MenuView(filters));
-render(mainElement, new SortingView());
+
+new MoviesPresenter(mainElement).init(movies);
 
 const renderMovies = () => {
   render(mainElement, new MoviesView());
@@ -119,3 +120,4 @@ if (movies.length === 0) {
 const moviesTotalElement = document.querySelector('.footer__statistics');
 
 render(moviesTotalElement, new MoviesTotalView(movies.length));
+
