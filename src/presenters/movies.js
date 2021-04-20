@@ -4,9 +4,11 @@ import MoviesView from '../views/movies';
 import DetailsModalView from '../views/details-modal';
 import MovieView from '../views/movie';
 import ShowMoreButtonView from '../views/show-more-button';
+import TopRatedMoviesView from '../views/top-rated-movies';
+import AllMoviesView from '../views/all-movies';
+import CommentedMoviesView from '../views/commented-movies';
 import {checkEscKeyDown} from '../helpers/helpers';
 import {render, RenderPosition} from '../helpers/render';
-import AllMoviesView from '../views/all-movies';
 
 const MoviesCount = {
   TOP_RATED: 2,
@@ -64,9 +66,27 @@ export default class Movies {
   }
 
   _renderTopRated() {
+    const topRatedView = new TopRatedMoviesView();
+    const topRatedContainer = topRatedView.getContainer();
+
+    this._movies.slice()
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, MoviesCount.TOP_RATED)
+      .forEach((movie) => this._renderMovie(topRatedContainer, movie));
+
+    render(this._moviesView, topRatedView);
   }
 
   _renderCommented() {
+    const commentedView = new CommentedMoviesView();
+    const commentedContainer = commentedView.getContainer();
+
+    this._movies.slice()
+      .sort((a, b) => b.comments.length - a.comments.length)
+      .slice(0, MoviesCount.COMMENTED)
+      .forEach((movie) => this._renderMovie(commentedContainer, movie));
+
+    render(this._moviesView, commentedView);
   }
 
   _renderMovies() {
@@ -103,23 +123,11 @@ export default class Movies {
   }
 
   _renderMovieList() {
-    render(this._container, this._moviesView);
     this._renderMovies();
+    this._renderTopRated();
+    this._renderCommented();
 
-    const topRatedElement = this._container.querySelector('[data-top-rated]');
-
-    this._movies.slice()
-      .sort((a, b) => b.rating - a.rating)
-      .slice(0, MoviesCount.TOP_RATED)
-      .forEach((movie) => this._renderMovie(topRatedElement, movie));
-
-    const mostCommentedElement = this._container
-      .querySelector('[data-commented]');
-
-    this._movies.slice()
-      .sort((a, b) => b.comments.length - a.comments.length)
-      .slice(0, MoviesCount.COMMENTED)
-      .forEach((movie) => this._renderMovie(mostCommentedElement, movie));
+    render(this._container, this._moviesView);
   }
 
   _renderBoard() {
