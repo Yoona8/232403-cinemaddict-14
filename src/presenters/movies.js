@@ -23,46 +23,57 @@ export default class Movies {
     this._user = null;
     this._movies = [];
     this._comments = [];
+    this._renderedMoviesCount = MoviesCount.PER_STEP;
     this._container = container;
+
     this._sortingView = new SortingView();
     this._moviesView = new MoviesView();
+    this._allMoviesView = new AllMoviesView();
+    this._showMoreButtonView = new ShowMoreButtonView();
+    this._detailsModalView = null;
+
+    this._detailsEscKeyDownHandler = this._detailsEscKeyDownHandler
+      .bind(this);
+    this._showMoreButtonClickHandler = this._showMoreButtonClickHandler
+      .bind(this);
   }
 
   _renderSorting() {
     render(this._container, this._sortingView);
   }
 
+  _openDetails(movie) {
+    this._detailsModalView = new DetailsModalView(
+      movie,
+      this._user,
+      this._comments,
+    );
+
+    this._detailsModalView.addCloseClickHandler(() => this._closeDetails());
+
+    document.addEventListener('keydown', this._detailsEscKeyDownHandler);
+    document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
+    render(document.body, this._detailsModalView);
+  }
+
+  _closeDetails() {
+    document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
+    document.removeEventListener('keydown', this._detailsEscKeyDownHandler);
+    this._detailsModalView.removeElement();
+  }
+
   _renderMovie(container, movie) {
-    const openDetails = (movie) => {
-      const detailsModalView = new DetailsModalView(
-        movie,
-        this._user,
-        this._comments,
-      );
-
-      const closeDetails = () => {
-        document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
-        document.removeEventListener('keydown', detailsEscKeyDownHandler);
-        detailsModalView.removeElement();
-      };
-
-      detailsModalView.addCloseClickHandler(() => closeDetails());
-
-      const detailsEscKeyDownHandler = (evt) => {
-        if (checkEscKeyDown(evt.key)) {
-          closeDetails();
-        }
-      };
-
-      document.addEventListener('keydown', detailsEscKeyDownHandler);
-      document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
-      render(document.body, detailsModalView);
-    };
-
     const movieView = new MovieView(movie, this._user);
 
-    movieView.addDetailsOpenClickHandler(() => openDetails(movie));
+    movieView.addDetailsOpenClickHandler(() => this._openDetails(movie));
     render(container, movieView);
+  }
+
+  _renderMovies(from, to) {
+    const moviesContainer = this._allMoviesView.getContainer();
+
+    this._movies.slice(from, to)
+      .forEach((movie) => this._renderMovie(moviesContainer, movie));
   }
 
   _renderTopRated() {
@@ -89,41 +100,27 @@ export default class Movies {
     render(this._moviesView, commentedView);
   }
 
-  _renderMovies() {
-    const allMoviesView = new AllMoviesView();
-    const moviesContainer = allMoviesView.getContainer();
-
-    this._movies.slice(0, MoviesCount.PER_STEP)
-      .forEach((movie) => this._renderMovie(moviesContainer, movie));
-
-    render(this._moviesView, allMoviesView);
+  _renderAllMovies() {
+    this._renderMovies(0, MoviesCount.PER_STEP);
+    render(this._moviesView, this._allMoviesView);
 
     if (this._movies.length > MoviesCount.PER_STEP) {
-      const showMoreButtonView = new ShowMoreButtonView();
-      let renderedMoviesCount = MoviesCount.PER_STEP;
-
-      const showMoreButtonClickHandler = () => {
-        this._movies
-          .slice(
-            renderedMoviesCount,
-            renderedMoviesCount + MoviesCount.PER_STEP,
-          )
-          .forEach((movie) => this._renderMovie(moviesContainer, movie));
-
-        renderedMoviesCount += MoviesCount.PER_STEP;
-
-        if (renderedMoviesCount >= this._movies.length) {
-          showMoreButtonView.removeElement();
-        }
-      };
-
-      showMoreButtonView.addClickHandler(showMoreButtonClickHandler);
-      render(moviesContainer, showMoreButtonView, RenderPosition.AFTER_END);
+      this._renderShowMoreButton();
     }
   }
 
+  _renderShowMoreButton() {
+    this._showMoreButtonView
+      .addClickHandler(this._showMoreButtonClickHandler);
+
+    render(
+      this._allMoviesView.getContainer(),
+      this._showMoreButtonView, RenderPosition.AFTER_END,
+    );
+  }
+
   _renderMovieList() {
-    this._renderMovies();
+    this._renderAllMovies();
     this._renderTopRated();
     this._renderCommented();
 
@@ -134,7 +131,27 @@ export default class Movies {
     if (this._movies.length === 0) {
       render(this._container, new NoMoviesView());
     } else {
+      this._renderSorting();
       this._renderMovieList();
+    }
+  }
+
+  _showMoreButtonClickHandler() {
+    this._renderMovies(
+      this._renderedMoviesCount,
+      this._renderedMoviesCount + MoviesCount.PER_STEP,
+    );
+
+    this._renderedMoviesCount += MoviesCount.PER_STEP;
+
+    if (this._renderedMoviesCount >= this._movies.length) {
+      this._showMoreButtonView.removeElement();
+    }
+  }
+
+  _detailsEscKeyDownHandler(evt) {
+    if (checkEscKeyDown(evt.key)) {
+      this._closeDetails();
     }
   }
 
@@ -142,7 +159,6 @@ export default class Movies {
     this._movies = movies;
     this._user = user;
     this._comments = comments;
-    this._renderSorting();
     this._renderBoard();
   }
 }
