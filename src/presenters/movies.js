@@ -6,6 +6,7 @@ import MovieView from '../views/movie';
 import ShowMoreButtonView from '../views/show-more-button';
 import {checkEscKeyDown} from '../helpers/helpers';
 import {render, RenderPosition} from '../helpers/render';
+import AllMoviesView from '../views/all-movies';
 
 const MoviesCount = {
   TOP_RATED: 2,
@@ -22,15 +23,14 @@ export default class Movies {
     this._comments = [];
     this._container = container;
     this._sortingView = new SortingView();
+    this._moviesView = new MoviesView();
   }
 
   _renderSorting() {
     render(this._container, this._sortingView);
   }
 
-  _renderMovieList() {
-    render(this._container, new MoviesView());
-
+  _renderMovie(container, movie) {
     const openDetails = (movie) => {
       const detailsModalView = new DetailsModalView(
         movie,
@@ -57,32 +57,26 @@ export default class Movies {
       render(document.body, detailsModalView);
     };
 
-    const renderMovie = (container, movie) => {
-      const movieView = new MovieView(movie, this._user);
+    const movieView = new MovieView(movie, this._user);
 
-      movieView.addDetailsOpenClickHandler(() => openDetails(movie));
-      render(container, movieView);
-    };
+    movieView.addDetailsOpenClickHandler(() => openDetails(movie));
+    render(container, movieView);
+  }
 
-    const moviesElement = this._container.querySelector('[data-movies]');
+  _renderTopRated() {
+  }
+
+  _renderCommented() {
+  }
+
+  _renderMovies() {
+    const allMoviesView = new AllMoviesView();
+    const moviesContainer = allMoviesView.getContainer();
 
     this._movies.slice(0, MoviesCount.PER_STEP)
-      .forEach((movie) => renderMovie(moviesElement, movie));
+      .forEach((movie) => this._renderMovie(moviesContainer, movie));
 
-    const topRatedElement = this._container.querySelector('[data-top-rated]');
-
-    this._movies.slice()
-      .sort((a, b) => b.rating - a.rating)
-      .slice(0, MoviesCount.TOP_RATED)
-      .forEach((movie) => renderMovie(topRatedElement, movie));
-
-    const mostCommentedElement = this._container
-      .querySelector('[data-commented]');
-
-    this._movies.slice()
-      .sort((a, b) => b.comments.length - a.comments.length)
-      .slice(0, MoviesCount.COMMENTED)
-      .forEach((movie) => renderMovie(mostCommentedElement, movie));
+    render(this._moviesView, allMoviesView);
 
     if (this._movies.length > MoviesCount.PER_STEP) {
       const showMoreButtonView = new ShowMoreButtonView();
@@ -94,7 +88,7 @@ export default class Movies {
             renderedMoviesCount,
             renderedMoviesCount + MoviesCount.PER_STEP,
           )
-          .forEach((movie) => renderMovie(moviesElement, movie));
+          .forEach((movie) => this._renderMovie(moviesContainer, movie));
 
         renderedMoviesCount += MoviesCount.PER_STEP;
 
@@ -104,11 +98,31 @@ export default class Movies {
       };
 
       showMoreButtonView.addClickHandler(showMoreButtonClickHandler);
-      render(moviesElement, showMoreButtonView, RenderPosition.AFTER_END);
+      render(moviesContainer, showMoreButtonView, RenderPosition.AFTER_END);
     }
   }
 
-  _renderMovies() {
+  _renderMovieList() {
+    render(this._container, this._moviesView);
+    this._renderMovies();
+
+    const topRatedElement = this._container.querySelector('[data-top-rated]');
+
+    this._movies.slice()
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, MoviesCount.TOP_RATED)
+      .forEach((movie) => this._renderMovie(topRatedElement, movie));
+
+    const mostCommentedElement = this._container
+      .querySelector('[data-commented]');
+
+    this._movies.slice()
+      .sort((a, b) => b.comments.length - a.comments.length)
+      .slice(0, MoviesCount.COMMENTED)
+      .forEach((movie) => this._renderMovie(mostCommentedElement, movie));
+  }
+
+  _renderBoard() {
     if (this._movies.length === 0) {
       render(this._container, new NoMoviesView());
     } else {
@@ -121,6 +135,6 @@ export default class Movies {
     this._user = user;
     this._comments = comments;
     this._renderSorting();
-    this._renderMovies();
+    this._renderBoard();
   }
 }
