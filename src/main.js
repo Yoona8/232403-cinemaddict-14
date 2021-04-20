@@ -5,7 +5,6 @@ import MovieView from './views/movie';
 import ShowMoreButtonView from './views/show-more-button';
 import MoviesTotalView from './views/movies-total';
 import DetailsModalView from './views/details-modal';
-import NoMoviesView from './views/no-movies';
 import MoviesPresenter from './presenters/movies';
 import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
@@ -15,7 +14,7 @@ import {render, RenderPosition} from './helpers/render';
 import {checkEscKeyDown} from './helpers/helpers';
 
 const MoviesCount = {
-  ALL: 20,
+  ALL: 0,
   TOP_RATED: 2,
   COMMENTED: 2,
   PER_STEP: 5,
@@ -111,9 +110,7 @@ const renderMovies = () => {
   }
 };
 
-if (movies.length === 0) {
-  render(mainElement, new NoMoviesView());
-} else {
+if (movies.length !== 0) {
   renderMovies();
 }
 
