@@ -56,6 +56,7 @@ const getMovieTemplate = (movie, user) => {
             film-card__controls-item--add-to-watchlist
             ${toWatchClassName}"
           type="button"
+          data-watchlist
         >Add to watchlist</button>
         <button
           class="
@@ -64,6 +65,7 @@ const getMovieTemplate = (movie, user) => {
             film-card__controls-item--mark-as-watched
             ${watchedClassName}"
           type="button"
+          data-watched
           >Mark as watched</button>
         <button
           class="
@@ -72,6 +74,7 @@ const getMovieTemplate = (movie, user) => {
             film-card__controls-item--favorite
             ${favoriteClassName}"
             type="button"
+            data-favorite
           >Mark as favorite</button>
       </div>
     </article>
@@ -86,6 +89,9 @@ export default class Movie extends AbstractView {
     this._user = user;
 
     this._detailsOpenClickHandler = this._detailsOpenClickHandler.bind(this);
+    this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   _getTemplate() {
@@ -97,6 +103,21 @@ export default class Movie extends AbstractView {
     this._callback.detailsOpenClickHandler();
   }
 
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchlistClickHandler();
+  }
+
+  _watchedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchedClickHandler();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClickHandler();
+  }
+
   addDetailsOpenClickHandler(cb) {
     this._callback.detailsOpenClickHandler = cb;
 
@@ -104,5 +125,23 @@ export default class Movie extends AbstractView {
       .forEach((element) => {
         element.addEventListener('click', this._detailsOpenClickHandler);
       });
+  }
+
+  addWatchlistClickHandler(cb) {
+    this._callback.watchlistClickHandler = cb;
+    this.getElement().querySelector('[data-watchlist]')
+      .addEventListener('click', this._watchlistClickHandler);
+  }
+
+  addWatchedClickHandler(cb) {
+    this._callback.watchedClickHandler = cb;
+    this.getElement().querySelector('[data-watched]')
+      .addEventListener('click', this._watchedClickHandler);
+  }
+
+  addFavoriteClickHandler(cb) {
+    this._callback.favoriteClickHandler = cb;
+    this.getElement().querySelector('[data-favorite]')
+      .addEventListener('click', this._favoriteClickHandler);
   }
 }

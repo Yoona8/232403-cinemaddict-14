@@ -27,6 +27,10 @@ export default class Movie {
 
     this._movieView = new MovieView(this._movie, this._user);
     this._movieView.addDetailsOpenClickHandler(() => this._openDetails());
+    this._movieView.addFavoriteClickHandler(() => {});
+    this._movieView.addWatchedClickHandler(() => {});
+    this._movieView.addWatchlistClickHandler(() => {});
+
     render(this._container, this._movieView);
   }
 
