@@ -1,13 +1,11 @@
+import MoviePresenter from './movie';
 import SortingView from '../views/sorting';
 import NoMoviesView from '../views/no-movies';
 import MoviesView from '../views/movies';
-import DetailsModalView from '../views/details-modal';
-import MovieView from '../views/movie';
 import ShowMoreButtonView from '../views/show-more-button';
 import TopRatedMoviesView from '../views/top-rated-movies';
 import AllMoviesView from '../views/all-movies';
 import CommentedMoviesView from '../views/commented-movies';
-import {checkEscKeyDown} from '../helpers/helpers';
 import {render, RenderPosition} from '../helpers/render';
 
 const MoviesCount = {
@@ -15,8 +13,6 @@ const MoviesCount = {
   COMMENTED: 2,
   PER_STEP: 5,
 };
-
-const BODY_NO_SCROLL_CLASS_NAME = 'hide-overflow';
 
 export default class Movies {
   constructor(container) {
@@ -30,43 +26,26 @@ export default class Movies {
     this._moviesView = new MoviesView();
     this._allMoviesView = new AllMoviesView();
     this._showMoreButtonView = new ShowMoreButtonView();
-    this._detailsModalView = null;
 
-    this._detailsEscKeyDownHandler = this._detailsEscKeyDownHandler
-      .bind(this);
     this._showMoreButtonClickHandler = this._showMoreButtonClickHandler
       .bind(this);
+  }
+
+  init(movies, user, comments) {
+    this._movies = movies;
+    this._user = user;
+    this._comments = comments;
+    this._renderBoard();
   }
 
   _renderSorting() {
     render(this._container, this._sortingView);
   }
 
-  _openDetails(movie) {
-    this._detailsModalView = new DetailsModalView(
-      movie,
-      this._user,
-      this._comments,
-    );
-
-    this._detailsModalView.addCloseClickHandler(() => this._closeDetails());
-
-    document.addEventListener('keydown', this._detailsEscKeyDownHandler);
-    document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
-    render(document.body, this._detailsModalView);
-  }
-
-  _closeDetails() {
-    document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
-    document.removeEventListener('keydown', this._detailsEscKeyDownHandler);
-    this._detailsModalView.removeElement();
-  }
-
   _renderMovie(container, movie) {
-    const movieView = new MovieView(movie, this._user);
+    const moviePresenter = new MoviePresenter(container);
 
-    movieView.addDetailsOpenClickHandler(() => this._openDetails(movie));
-    render(container, movieView);
+    moviePresenter.init(movie, this._user, this._comments);
   }
 
   _renderMovies(from, to) {
@@ -147,18 +126,5 @@ export default class Movies {
     if (this._renderedMoviesCount >= this._movies.length) {
       this._showMoreButtonView.removeElement();
     }
-  }
-
-  _detailsEscKeyDownHandler(evt) {
-    if (checkEscKeyDown(evt.key)) {
-      this._closeDetails();
-    }
-  }
-
-  init(movies, user, comments) {
-    this._movies = movies;
-    this._user = user;
-    this._comments = comments;
-    this._renderBoard();
   }
 }
