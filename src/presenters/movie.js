@@ -2,12 +2,14 @@ import MovieView from '../views/movie';
 import DetailsModalView from '../views/details-modal';
 import {render, replace} from '../helpers/render';
 import {checkEscKeyDown} from '../helpers/helpers';
+import {UserAction} from '../helpers/consts';
 
 const BODY_NO_SCROLL_CLASS_NAME = 'hide-overflow';
 
 export default class Movie {
-  constructor(container) {
+  constructor(container, movieChangeHandler) {
     this._container = container;
+    this._changeMovie = movieChangeHandler;
 
     this._movie = null;
     this._user = null;
@@ -21,15 +23,17 @@ export default class Movie {
   }
 
   init(movie, user, comments) {
-    this._movie = movie;
     this._user = user || this._user;
+    this._movie = movie;
     this._comments = comments || this._comments;
 
     const prevMovieView = this._movieView;
 
     this._movieView = new MovieView(this._movie, this._user);
     this._movieView.addDetailsOpenClickHandler(() => this._openDetails());
-    this._movieView.addFavoriteClickHandler(() => {});
+    this._movieView.addFavoriteClickHandler(() => {
+      this._changeMovie(UserAction.FAVORITE, Object.assign({}, this._movie));
+    });
     this._movieView.addWatchedClickHandler(() => {});
     this._movieView.addWatchlistClickHandler(() => {});
 
@@ -38,7 +42,7 @@ export default class Movie {
       return;
     }
 
-    if (this._container.getElement().contains(prevMovieView.getElement())) {
+    if (this._container.contains(prevMovieView.getElement())) {
       replace(this._movieView, prevMovieView);
     }
   }

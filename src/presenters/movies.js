@@ -7,6 +7,7 @@ import TopRatedMoviesView from '../views/top-rated-movies';
 import AllMoviesView from '../views/all-movies';
 import CommentedMoviesView from '../views/commented-movies';
 import {render, RenderPosition} from '../helpers/render';
+import {UserAction} from '../helpers/consts';
 
 const MoviesCount = {
   TOP_RATED: 2,
@@ -22,6 +23,8 @@ export default class Movies {
     this._renderedMoviesCount = MoviesCount.PER_STEP;
     this._container = container;
 
+    this._moviePresenters = [];
+
     this._sortingView = new SortingView();
     this._moviesView = new MoviesView();
     this._allMoviesView = new AllMoviesView();
@@ -29,6 +32,7 @@ export default class Movies {
 
     this._showMoreButtonClickHandler = this._showMoreButtonClickHandler
       .bind(this);
+    this._movieChangeHandler = this._movieChangeHandler.bind(this);
   }
 
   init(movies, user, comments) {
@@ -43,9 +47,16 @@ export default class Movies {
   }
 
   _renderMovie(container, movie) {
-    const moviePresenter = new MoviePresenter(container);
+    const moviePresenter = new MoviePresenter(
+      container,
+      this._movieChangeHandler,
+    );
 
     moviePresenter.init(movie, this._user, this._comments);
+    this._moviePresenters.push({
+      movieId: movie.id,
+      presenter: moviePresenter,
+    });
   }
 
   _renderMovies(from, to) {
@@ -113,6 +124,25 @@ export default class Movies {
       this._renderSorting();
       this._renderMovieList();
     }
+  }
+
+  _movieChangeHandler(userAction, updatedMovie) {
+    const movieId = updatedMovie.id;
+
+    switch (userAction) {
+      case UserAction.FAVORITE:
+        if (this._user.favorites.has(movieId)) {
+          this._user.favorites.delete(movieId);
+          break;
+        }
+
+        this._user.favorites.add(movieId);
+        break;
+    }
+
+    this._moviePresenters
+      .filter((item) => item.movieId === movieId)
+      .forEach((item) => item.presenter.init(updatedMovie, this._user));
   }
 
   _showMoreButtonClickHandler() {

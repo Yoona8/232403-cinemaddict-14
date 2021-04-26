@@ -43,6 +43,20 @@ const checkEscKeyDown = (key) => {
   return pressedKey === 'escape' || pressedKey === 'esc';
 };
 
+const updateItem = (items, updatedItem) => {
+  const index = items.findIndex((item) => item.id === updatedItem.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    updatedItem,
+    ...items.slice(index + 1),
+  ];
+};
+
 export {
   getRandomInteger,
   getYear,
@@ -50,5 +64,6 @@ export {
   formatReleaseDate,
   formatCommentDate,
   trimText,
-  checkEscKeyDown
+  checkEscKeyDown,
+  updateItem
 };
