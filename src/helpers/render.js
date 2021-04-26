@@ -21,6 +21,24 @@ const render = (container, element, position) => {
   }
 };
 
+const replace = (newElement, oldElement) => {
+  newElement = newElement instanceof AbstractView
+    ? newElement.getElement()
+    : newElement;
+
+  oldElement = oldElement instanceof AbstractView
+    ? oldElement.getElement()
+    : oldElement;
+
+  const parentElement = oldElement.parentElement;
+
+  if (parentElement === null || newElement === null) {
+    throw new Error('Can\'t replace nullable elements');
+  }
+
+  parentElement.replaceChild(newElement, oldElement);
+};
+
 const getElementFromTemplate = (template) => {
   const element = document.createElement('div');
 
@@ -29,4 +47,4 @@ const getElementFromTemplate = (template) => {
   return element.firstElementChild;
 };
 
-export {render, RenderPosition, getElementFromTemplate};
+export {render, RenderPosition, getElementFromTemplate, replace};
