@@ -131,18 +131,51 @@ export default class Movies {
 
     switch (userAction) {
       case UserAction.FAVORITE:
-        if (this._user.favorites.has(movieId)) {
-          this._user.favorites.delete(movieId);
-          break;
-        }
-
-        this._user.favorites.add(movieId);
+        this._favoriteToggleHandler(movieId);
         break;
+      case UserAction.WATCHLIST:
+        this._toggleWatchlistHandler(movieId);
+        break;
+      case UserAction.WATCHED:
+        this._toggleWatchedHandler(movieId);
     }
 
     this._moviePresenters
       .filter((item) => item.movieId === movieId)
       .forEach((item) => item.presenter.init(updatedMovie, this._user));
+  }
+
+  _favoriteToggleHandler(movieId) {
+    const {favorites} = this._user;
+
+    if (favorites.has(movieId)) {
+      favorites.delete(movieId);
+      return;
+    }
+
+    favorites.add(movieId);
+  }
+
+  _toggleWatchlistHandler(movieId) {
+    const {watchlist} = this._user;
+
+    if (watchlist.has(movieId)) {
+      watchlist.delete(movieId);
+      return;
+    }
+
+    watchlist.add(movieId);
+  }
+
+  _toggleWatchedHandler(movieId) {
+    const {watched} = this._user;
+
+    if (watched.has(movieId)) {
+      watched.delete(movieId);
+      return;
+    }
+
+    watched.add(movieId);
   }
 
   _showMoreButtonClickHandler() {

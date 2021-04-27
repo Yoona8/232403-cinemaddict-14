@@ -34,8 +34,12 @@ export default class Movie {
     this._movieView.addFavoriteClickHandler(() => {
       this._changeMovie(UserAction.FAVORITE, Object.assign({}, this._movie));
     });
-    this._movieView.addWatchedClickHandler(() => {});
-    this._movieView.addWatchlistClickHandler(() => {});
+    this._movieView.addWatchedClickHandler(() => {
+      this._changeMovie(UserAction.WATCHED, Object.assign({}, this._movie));
+    });
+    this._movieView.addWatchlistClickHandler(() => {
+      this._changeMovie(UserAction.WATCHLIST, Object.assign({}, this._movie));
+    });
 
     if (prevMovieView === null) {
       render(this._container, this._movieView);
