@@ -49,7 +49,8 @@ export default class Sorting extends AbstractView {
   _sortingTypeClickHandler(evt) {
     if (evt.target.tagName.toLowerCase() === 'a') {
       evt.preventDefault();
-      this._callback.sortingTypeClickHandler(evt.target.dataset.sortingType);
+      this._callback
+        .sortingTypeClickHandler(Number(evt.target.dataset.sortingType));
     }
   }
 
