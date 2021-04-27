@@ -45,6 +45,7 @@ export default class Movies {
   }
 
   _renderSorting() {
+    this._sortingView.addSortingTypeClickHandler(() => {});
     render(this._container, this._sortingView);
   }
 

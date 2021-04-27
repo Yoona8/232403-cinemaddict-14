@@ -36,7 +36,25 @@ const getSortingTemplate = () => {
 };
 
 export default class Sorting extends AbstractView {
+  constructor() {
+    super();
+
+    this._sortingTypeClickHandler = this._sortingTypeClickHandler.bind(this);
+  }
+
   _getTemplate() {
     return getSortingTemplate();
+  }
+
+  _sortingTypeClickHandler(evt) {
+    if (evt.target.tagName.toLowerCase() === 'a') {
+      evt.preventDefault();
+      this._callback.sortingTypeClickHandler(evt.target.dataset.sortingType);
+    }
+  }
+
+  addSortingTypeClickHandler(cb) {
+    this._callback.sortingTypeClickHandler = cb;
+    this.getElement().addEventListener('click', this._sortingTypeClickHandler);
   }
 }
