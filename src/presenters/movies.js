@@ -24,6 +24,7 @@ export default class Movies {
     this._container = container;
 
     this._moviePresenters = [];
+    this._currentDetailsPresenter = null;
 
     this._sortingView = new SortingView();
     this._moviesView = new MoviesView();
@@ -33,6 +34,7 @@ export default class Movies {
     this._showMoreButtonClickHandler = this._showMoreButtonClickHandler
       .bind(this);
     this._movieChangeHandler = this._movieChangeHandler.bind(this);
+    this._detailsOpenHandler = this._detailsOpenHandler.bind(this);
   }
 
   init(movies, user, comments) {
@@ -52,6 +54,7 @@ export default class Movies {
       this._movieChangeHandler,
     );
 
+    moviePresenter.addDetailsOpenHandler(this._detailsOpenHandler);
     moviePresenter.init(movie, this._user, this._comments);
     this._moviePresenters.push({
       movieId: movie.id,
@@ -189,5 +192,14 @@ export default class Movies {
     if (this._renderedMoviesCount >= this._movies.length) {
       this._showMoreButtonView.removeElement();
     }
+  }
+
+  _detailsOpenHandler(movieId) {
+    if (this._currentDetailsPresenter) {
+      this._currentDetailsPresenter.presenter.resetView();
+    }
+
+    this._currentDetailsPresenter = this._moviePresenters
+      .find((item) => item.movieId === movieId);
   }
 }

@@ -18,6 +18,8 @@ export default class Movie {
     this._movieView = null;
     this._detailsModalView = null;
 
+    this._callback = {};
+
     this._detailsEscKeyDownHandler = this._detailsEscKeyDownHandler
       .bind(this);
     this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
@@ -48,10 +50,14 @@ export default class Movie {
     }
   }
 
-  _openDetails() {
+  resetView() {
     if (this._detailsModalView) {
       this._closeDetails();
     }
+  }
+
+  _openDetails() {
+    this._callback.detailsOpenHandler(this._movie.id);
 
     this._detailsModalView = new DetailsModalView(
       this._movie,
@@ -94,5 +100,9 @@ export default class Movie {
 
   _watchlistToggleHandler() {
     this._changeMovie(UserAction.WATCHLIST, Object.assign({}, this._movie));
+  }
+
+  addDetailsOpenHandler(cb) {
+    this._callback.detailsOpenHandler = cb;
   }
 }
