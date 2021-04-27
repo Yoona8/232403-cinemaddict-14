@@ -49,6 +49,10 @@ export default class Movie {
   }
 
   _openDetails() {
+    if (this._detailsModalView) {
+      this._closeDetails();
+    }
+
     this._detailsModalView = new DetailsModalView(
       this._movie,
       this._user,
@@ -71,6 +75,7 @@ export default class Movie {
     document.body.classList.remove(BODY_NO_SCROLL_CLASS_NAME);
     document.removeEventListener('keydown', this._detailsEscKeyDownHandler);
     this._detailsModalView.removeElement();
+    this._detailsModalView = null;
   }
 
   _detailsEscKeyDownHandler(evt) {
