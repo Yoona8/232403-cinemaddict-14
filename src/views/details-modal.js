@@ -198,6 +198,7 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
               id="watchlist"
               name="watchlist"
               ${toWatchChecked}
+              data-watchlist
             >
             <label
               for="watchlist"
@@ -212,6 +213,7 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
               id="watched"
               name="watched"
               ${watchedChecked}
+              data-watched
             >
             <label
               for="watched"
@@ -226,6 +228,7 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
               id="favorite"
               name="favorite"
               ${favoriteChecked}
+              data-favorite
             >
             <label
               for="favorite"
@@ -278,6 +281,9 @@ export default class DetailsModal extends AbstractView {
     this._comments = comments;
 
     this._closeClickHandler = this._closeClickHandler.bind(this);
+    this._watchedChangeHandler = this._watchedChangeHandler.bind(this);
+    this._watchlistChangeHandler = this._watchlistChangeHandler.bind(this);
+    this._favoriteChangeHandler = this._favoriteChangeHandler.bind(this);
   }
 
   _getTemplate() {
@@ -290,10 +296,40 @@ export default class DetailsModal extends AbstractView {
     this._callback.closeClickHandler();
   }
 
+  _watchlistChangeHandler() {
+    this._callback.watchlistChangeHandler();
+  }
+
+  _watchedChangeHandler() {
+    this._callback.watchedChangeHandler();
+  }
+
+  _favoriteChangeHandler() {
+    this._callback.favoriteChangeHandler();
+  }
+
   addCloseClickHandler(cb) {
     this._callback.closeClickHandler = cb;
 
     this.getElement().querySelector('[data-close]')
       .addEventListener('click', this._closeClickHandler);
+  }
+
+  addWatchlistChangeHandler(cb) {
+    this._callback.watchlistChangeHandler = cb;
+    this.getElement().querySelector('[data-watchlist]')
+      .addEventListener('change', this._watchlistChangeHandler);
+  }
+
+  addWatchedChangeHandler(cb) {
+    this._callback.watchedChangeHandler = cb;
+    this.getElement().querySelector('[data-watched]')
+      .addEventListener('change', this._watchedChangeHandler);
+  }
+
+  addFavoriteChangeHandler(cb) {
+    this._callback.favoriteChangeHandler = cb;
+    this.getElement().querySelector('[data-favorite]')
+      .addEventListener('change', this._favoriteChangeHandler);
   }
 }

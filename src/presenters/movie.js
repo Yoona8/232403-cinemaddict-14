@@ -20,6 +20,9 @@ export default class Movie {
 
     this._detailsEscKeyDownHandler = this._detailsEscKeyDownHandler
       .bind(this);
+    this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
+    this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
+    this._watchlistToggleHandler = this._watchlistToggleHandler.bind(this);
   }
 
   init(movie, user, comments) {
@@ -31,15 +34,9 @@ export default class Movie {
 
     this._movieView = new MovieView(this._movie, this._user);
     this._movieView.addDetailsOpenClickHandler(() => this._openDetails());
-    this._movieView.addFavoriteClickHandler(() => {
-      this._changeMovie(UserAction.FAVORITE, Object.assign({}, this._movie));
-    });
-    this._movieView.addWatchedClickHandler(() => {
-      this._changeMovie(UserAction.WATCHED, Object.assign({}, this._movie));
-    });
-    this._movieView.addWatchlistClickHandler(() => {
-      this._changeMovie(UserAction.WATCHLIST, Object.assign({}, this._movie));
-    });
+    this._movieView.addFavoriteClickHandler(this._favoriteToggleHandler);
+    this._movieView.addWatchedClickHandler(this._watchedToggleHandler);
+    this._movieView.addWatchlistClickHandler(this._watchlistToggleHandler);
 
     if (prevMovieView === null) {
       render(this._container, this._movieView);
@@ -59,6 +56,11 @@ export default class Movie {
     );
 
     this._detailsModalView.addCloseClickHandler(() => this._closeDetails());
+    this._detailsModalView
+      .addFavoriteChangeHandler(this._favoriteToggleHandler);
+    this._detailsModalView.addWatchedChangeHandler(this._watchedToggleHandler);
+    this._detailsModalView
+      .addWatchlistChangeHandler(this._watchlistToggleHandler);
 
     document.addEventListener('keydown', this._detailsEscKeyDownHandler);
     document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
@@ -75,5 +77,17 @@ export default class Movie {
     if (checkEscKeyDown(evt.key)) {
       this._closeDetails();
     }
+  }
+
+  _favoriteToggleHandler() {
+    this._changeMovie(UserAction.FAVORITE, Object.assign({}, this._movie));
+  }
+
+  _watchedToggleHandler() {
+    this._changeMovie(UserAction.WATCHED, Object.assign({}, this._movie));
+  }
+
+  _watchlistToggleHandler() {
+    this._changeMovie(UserAction.WATCHLIST, Object.assign({}, this._movie));
   }
 }
