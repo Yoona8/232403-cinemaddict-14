@@ -5,4 +5,10 @@ const UserAction = {
   WATCHED: 2,
 };
 
-export {EMOJIS, UserAction};
+const SortingType = {
+  DEFAULT: 0,
+  DATE: 1,
+  RATING: 2,
+};
+
+export {EMOJIS, UserAction, SortingType};
