@@ -56,6 +56,14 @@ export default class Movie {
     }
   }
 
+  destroy() {
+    this._movieView.removeElement();
+
+    if (this._detailsModalView) {
+      this._detailsModalView.removeElement();
+    }
+  }
+
   _openDetails() {
     this._callback.detailsOpenHandler(this._movie.id);
 
