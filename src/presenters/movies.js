@@ -42,10 +42,10 @@ export default class Movies {
   }
 
   init(movies, user, comments) {
-    this._movies = movies;
+    this._movies = movies.slice();
     this._sortedMovies = this._movies.slice();
     this._user = user;
-    this._comments = comments;
+    this._comments = comments.slice();
     this._renderBoard();
   }
 
@@ -163,7 +163,7 @@ export default class Movies {
         this._sortedMovies.sort(sortMoviesByRatingDown);
         break;
       default:
-        this._sortedMovies = this._movies;
+        this._sortedMovies = this._movies.slice();
     }
   }
 
