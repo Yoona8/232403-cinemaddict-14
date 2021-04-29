@@ -1,4 +1,4 @@
-import AbstractView from './abstract';
+import SmartView from './smart';
 import {
   formatReleaseDate,
   formatDuration,
@@ -272,7 +272,7 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
   `.trim();
 };
 
-export default class DetailsModal extends AbstractView {
+export default class DetailsModal extends SmartView {
   constructor(movie, user = {}, comments = new Set()) {
     super();
 
@@ -289,6 +289,8 @@ export default class DetailsModal extends AbstractView {
   _getTemplate() {
     return getDetailsModalTemplate(this._movie, this._user, this._comments);
   }
+
+  _restoreHandlers() {}
 
   _closeClickHandler(evt) {
     evt.preventDefault();
