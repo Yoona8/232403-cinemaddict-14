@@ -8,7 +8,6 @@ import {EMOJIS} from '../helpers/consts';
 
 const getGenresTemplate = (genres) => {
   const label = genres.length === 1 ? 'Genre' : 'Genres';
-
   const genresTemplate = genres.map((genre) => {
     return `<span class="film-details__genre">${genre}</span>`;
   }).join('');
@@ -64,14 +63,17 @@ const getCommentsTemplate = (comments) => {
   `;
 };
 
-const getEmojiTemplate = (emoji) => {
+const getEmojiTemplate = (emoji, currentEmoji) => {
+  const isChecked = emoji === currentEmoji ? 'checked' : '';
+
   return `
     <input
       class="film-details__emoji-item visually-hidden"
       name="comment-emoji"
       type="radio"
       id="emoji-${emoji}"
-      value="smile"
+      value="${emoji}"
+      ${isChecked}
     >
     <label
       class="film-details__emoji-label"
@@ -86,7 +88,16 @@ const getEmojiTemplate = (emoji) => {
   `;
 };
 
-const getDetailsModalTemplate = (movie, user, commentMessages) => {
+const getEmojiImageTemplate = (emoji) => {
+  return `
+    <img
+      src="images/emoji/${emoji}.png"
+      width="55" height="55" alt="emoji-${emoji}"
+    >
+  `.trim();
+};
+
+const getDetailsModalTemplate = (state, user, commentMessages) => {
   const {
     id,
     poster,
@@ -103,11 +114,11 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
     genres,
     description,
     comments,
-  } = movie;
+    commentEmojiS,
+  } = state;
 
   const {watched, watchlist, favorites} = user;
 
-  const emojis = EMOJIS;
   const formattedReleaseDate = formatReleaseDate(releaseDate);
   const formattedDuration = formatDuration(duration);
   const genresTemplate = genres.length === 0 ? '' : getGenresTemplate(genres);
@@ -119,8 +130,10 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
     return comments.has(message.id);
   });
   const commentsTemplate = getCommentsTemplate(movieCommentMessages);
-  const emojisTemplate = emojis
-    .map((emoji) => getEmojiTemplate(emoji))
+  const emojiImageTemplate = commentEmojiS
+    ? getEmojiImageTemplate(commentEmojiS) : '';
+  const emojisTemplate = EMOJIS
+    .map((emoji) => getEmojiTemplate(emoji, commentEmojiS))
     .join('');
 
   return `
@@ -251,7 +264,9 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
             ${commentsTemplate}
 
             <div class="film-details__new-comment">
-              <div class="film-details__add-emoji-label"></div>
+              <div class="film-details__add-emoji-label">
+                ${emojiImageTemplate}
+              </div>
 
               <label class="film-details__comment-label">
                 <textarea
@@ -261,7 +276,7 @@ const getDetailsModalTemplate = (movie, user, commentMessages) => {
                 ></textarea>
               </label>
 
-              <div class="film-details__emoji-list">
+              <div class="film-details__emoji-list" data-emoji-list>
                 ${emojisTemplate}
               </div>
             </div>
@@ -276,21 +291,30 @@ export default class DetailsModal extends SmartView {
   constructor(movie, user = {}, comments = new Set()) {
     super();
 
-    this._movie = movie;
     this._user = user;
     this._comments = comments;
+    this._state = DetailsModal.parseDataToState(movie);
 
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._watchedChangeHandler = this._watchedChangeHandler.bind(this);
     this._watchlistChangeHandler = this._watchlistChangeHandler.bind(this);
     this._favoriteChangeHandler = this._favoriteChangeHandler.bind(this);
+    this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
+
+    this._addInnerHandlers();
   }
 
   _getTemplate() {
-    return getDetailsModalTemplate(this._movie, this._user, this._comments);
+    return getDetailsModalTemplate(this._state, this._user, this._comments);
   }
 
-  _restoreHandlers() {}
+  _restoreHandlers() {
+    this._addInnerHandlers();
+    this.addCloseClickHandler(this._callback.closeClickHandler);
+    this.addFavoriteChangeHandler(this._callback.favoriteChangeHandler);
+    this.addWatchedChangeHandler(this._callback.watchedChangeHandler);
+    this.addWatchlistChangeHandler(this._callback.watchlistChangeHandler);
+  }
 
   _closeClickHandler(evt) {
     evt.preventDefault();
@@ -308,6 +332,21 @@ export default class DetailsModal extends SmartView {
 
   _favoriteChangeHandler() {
     this._callback.favoriteChangeHandler();
+  }
+
+  _emojiChangeHandler(evt) {
+    const currentScrollTop = this.getElement().scrollTop;
+
+    this._updateState({
+      commentEmojiS: evt.target.value,
+    });
+
+    this.getElement().scrollTop = currentScrollTop;
+  }
+
+  _addInnerHandlers() {
+    this.getElement().querySelector('[data-emoji-list]')
+      .addEventListener('change', this._emojiChangeHandler);
   }
 
   addCloseClickHandler(cb) {
@@ -333,5 +372,18 @@ export default class DetailsModal extends SmartView {
     this._callback.favoriteChangeHandler = cb;
     this.getElement().querySelector('[data-favorite]')
       .addEventListener('change', this._favoriteChangeHandler);
+  }
+
+  static parseDataToState(movie) {
+    return Object.assign({}, movie, {
+      commentEmojiS: null,
+    });
+  }
+
+  static parseStateToData(state) {
+    const data = Object.assign({}, state);
+
+    delete data.commentEmojiS;
+    return data;
   }
 }
