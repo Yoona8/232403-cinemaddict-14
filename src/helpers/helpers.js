@@ -1,4 +1,7 @@
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const getRandomInteger = (a = 0, b = 1) => {
   const min = Math.ceil(Math.min(a, b));
@@ -16,15 +19,15 @@ const formatReleaseDate = (date) => {
 };
 
 const formatCommentDate = (date) => {
-  return dayjs(date).format('YYYY/MM/DD hh:mm');
+  return dayjs(date).fromNow();
 };
 
 const formatDuration = (duration) => {
   const MINUTES_IN_HOUR = 60;
 
-  const hours = parseInt(String(duration / MINUTES_IN_HOUR), 10);
-  const hoursString = hours === 0 ? '' : `${hours}h`;
+  const hours = Math.trunc(duration / MINUTES_IN_HOUR);
   const minutes = duration % MINUTES_IN_HOUR;
+  const hoursString = hours === 0 ? '' : `${hours}h`;
 
   return `${hoursString} ${minutes}m`.trim();
 };
