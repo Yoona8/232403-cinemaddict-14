@@ -17,14 +17,16 @@ const MoviesCount = {
 };
 
 export default class Movies {
-  constructor(container) {
+  constructor(container, moviesModel) {
+    this._container = container;
+    this._moviesModel = moviesModel;
+
     this._user = null;
     this._movies = [];
     this._sortedMovies = [];
     this._comments = [];
     this._renderedMoviesCount = MoviesCount.PER_STEP;
     this._currentSortingType = SortingType.DEFAULT;
-    this._container = container;
 
     this._moviePresenters = [];
     this._currentDetailsPresenter = null;
@@ -41,8 +43,8 @@ export default class Movies {
     this._sortingChangeHandler = this._sortingChangeHandler.bind(this);
   }
 
-  init(movies, user, comments) {
-    this._movies = movies.slice();
+  init(user, comments) {
+    this._movies = this._moviesModel.getMovies().slice();
     this._sortedMovies = this._movies.slice();
     this._user = user;
     this._comments = comments.slice();

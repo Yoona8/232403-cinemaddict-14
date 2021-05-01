@@ -2,6 +2,7 @@ import UserView from './views/user';
 import MenuView from './views/menu';
 import MoviesTotalView from './views/movies-total';
 import MoviesPresenter from './presenters/movies';
+import MoviesModel from './models/movies';
 import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
@@ -22,7 +23,11 @@ const mainElement = document.querySelector('.main');
 
 render(mainElement, new MenuView(filters));
 
-new MoviesPresenter(mainElement).init(movies, user, comments);
+const moviesModel = new MoviesModel();
+
+moviesModel.setMovies(movies);
+
+new MoviesPresenter(mainElement, moviesModel).init(user, comments);
 
 render(
   document.querySelector('.footer__statistics'),
