@@ -68,6 +68,10 @@ const sortMoviesByRatingDown = (movieA, movieB) => {
   return movieB.rating - movieA.rating;
 };
 
+const sortMoviesByCommentsCountDown = (movieA, movieB) => {
+  return movieB.comments.size - movieA.comments.size;
+};
+
 export {
   getRandomInteger,
   getYear,
@@ -78,5 +82,6 @@ export {
   checkEscKeyDown,
   updateItem,
   sortMoviesByDateDown,
-  sortMoviesByRatingDown
+  sortMoviesByRatingDown,
+  sortMoviesByCommentsCountDown
 };

@@ -9,6 +9,7 @@ const SortingType = {
   DEFAULT: 0,
   DATE: 1,
   RATING: 2,
+  COMMENTED: 3,
 };
 
 export {EMOJIS, UserAction, SortingType};

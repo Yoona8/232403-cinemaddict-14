@@ -8,7 +8,11 @@ import AllMoviesView from '../views/all-movies';
 import CommentedMoviesView from '../views/commented-movies';
 import {render, RenderPosition} from '../helpers/render';
 import {SortingType, UserAction} from '../helpers/consts';
-import {sortMoviesByDateDown, sortMoviesByRatingDown} from '../helpers/helpers';
+import {
+  sortMoviesByCommentsCountDown,
+  sortMoviesByDateDown,
+  sortMoviesByRatingDown
+} from '../helpers/helpers';
 
 const MoviesCount = {
   TOP_RATED: 2,
@@ -22,8 +26,6 @@ export default class Movies {
     this._moviesModel = moviesModel;
 
     this._user = null;
-    this._movies = [];
-    this._sortedMovies = [];
     this._comments = [];
     this._renderedMoviesCount = MoviesCount.PER_STEP;
     this._currentSortingType = SortingType.DEFAULT;
@@ -44,11 +46,25 @@ export default class Movies {
   }
 
   init(user, comments) {
-    this._movies = this._moviesModel.getMovies().slice();
-    this._sortedMovies = this._movies.slice();
     this._user = user;
     this._comments = comments.slice();
     this._renderBoard();
+  }
+
+  _getMovies(sortingType = this._currentSortingType) {
+    switch (sortingType) {
+      case SortingType.DATE:
+        return this._moviesModel.getMovies()
+          .slice().sort(sortMoviesByDateDown);
+      case SortingType.RATING:
+        return this._moviesModel.getMovies()
+          .slice().sort(sortMoviesByRatingDown);
+      case SortingType.COMMENTED:
+        return this._moviesModel.getMovies()
+          .slice().sort(sortMoviesByCommentsCountDown);
+      default:
+        return this._moviesModel.getMovies();
+    }
   }
 
   _renderSorting() {
@@ -74,7 +90,7 @@ export default class Movies {
   _renderMovies(from, to) {
     const moviesContainer = this._allMoviesView.getContainer();
 
-    this._sortedMovies.slice(from, to)
+    this._getMovies().slice(from, to)
       .forEach((movie) => this._renderMovie(moviesContainer, movie));
   }
 
@@ -82,8 +98,7 @@ export default class Movies {
     const topRatedView = new TopRatedMoviesView();
     const topRatedContainer = topRatedView.getContainer();
 
-    this._movies.slice()
-      .sort((a, b) => b.rating - a.rating)
+    this._getMovies(SortingType.RATING)
       .slice(0, MoviesCount.TOP_RATED)
       .forEach((movie) => this._renderMovie(topRatedContainer, movie));
 
@@ -94,8 +109,7 @@ export default class Movies {
     const commentedView = new CommentedMoviesView();
     const commentedContainer = commentedView.getContainer();
 
-    this._movies.slice()
-      .sort((a, b) => b.comments.length - a.comments.length)
+    this._getMovies(SortingType.COMMENTED)
       .slice(0, MoviesCount.COMMENTED)
       .forEach((movie) => this._renderMovie(commentedContainer, movie));
 
@@ -110,7 +124,7 @@ export default class Movies {
       render(this._moviesView, this._allMoviesView);
     }
 
-    if (this._sortedMovies.length > MoviesCount.PER_STEP) {
+    if (this._getMovies().length > MoviesCount.PER_STEP) {
       this._renderShowMoreButton();
     }
   }
@@ -135,7 +149,7 @@ export default class Movies {
   }
 
   _renderBoard() {
-    if (this._movies.length === 0) {
+    if (this._getMovies().length === 0) {
       render(this._container, new NoMoviesView());
     } else {
       this._renderSorting();
@@ -147,25 +161,13 @@ export default class Movies {
     this._moviePresenters
       .filter((item) => item.container === this._allMoviesView.getContainer())
       .forEach((item) => item.presenter.destroy());
-    this._moviePresenters = [];
+    this._moviePresenters = this._moviePresenters
+      .filter((item) => item.container !== this._allMoviesView.getContainer());
     this._renderedMoviesCount = MoviesCount.PER_STEP;
 
     if (this._showMoreButtonView) {
       this._showMoreButtonView.removeElement();
       this._showMoreButtonView = null;
-    }
-  }
-
-  _sortMovies(sortingType) {
-    switch (sortingType) {
-      case SortingType.DATE:
-        this._sortedMovies.sort(sortMoviesByDateDown);
-        break;
-      case SortingType.RATING:
-        this._sortedMovies.sort(sortMoviesByRatingDown);
-        break;
-      default:
-        this._sortedMovies = this._movies.slice();
     }
   }
 
@@ -229,7 +231,7 @@ export default class Movies {
 
     this._renderedMoviesCount += MoviesCount.PER_STEP;
 
-    if (this._renderedMoviesCount >= this._sortedMovies.length) {
+    if (this._renderedMoviesCount >= this._getMovies().length) {
       this._showMoreButtonView.removeElement();
       this._showMoreButtonView = null;
     }
@@ -251,7 +253,6 @@ export default class Movies {
 
     this._currentSortingType = sortingType;
     this._clearAllMovies();
-    this._sortMovies(sortingType);
     this._renderAllMovies();
   }
 }
