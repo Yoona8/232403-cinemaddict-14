@@ -80,6 +80,7 @@ export default class Movies {
 
     moviePresenter.addDetailsOpenHandler(this._detailsOpenHandler);
     moviePresenter.init(movie, this._user, this._comments);
+
     this._moviePresenters.push({
       movieId: movie.id,
       container,
@@ -87,44 +88,44 @@ export default class Movies {
     });
   }
 
-  _renderMovies(from, to) {
-    const moviesContainer = this._allMoviesView.getContainer();
-
-    this._getMovies().slice(from, to)
-      .forEach((movie) => this._renderMovie(moviesContainer, movie));
+  _renderMovies(container, movies) {
+    movies.forEach((movie) => this._renderMovie(container, movie));
   }
 
   _renderTopRated() {
     const topRatedView = new TopRatedMoviesView();
     const topRatedContainer = topRatedView.getContainer();
+    const movies = this._getMovies(SortingType.RATING)
+      .slice(0, MoviesCount.TOP_RATED);
 
-    this._getMovies(SortingType.RATING)
-      .slice(0, MoviesCount.TOP_RATED)
-      .forEach((movie) => this._renderMovie(topRatedContainer, movie));
-
+    this._renderMovies(topRatedContainer, movies);
     render(this._moviesView, topRatedView);
   }
 
   _renderCommented() {
     const commentedView = new CommentedMoviesView();
     const commentedContainer = commentedView.getContainer();
+    const movies = this._getMovies(SortingType.COMMENTED)
+      .slice(0, MoviesCount.TOP_RATED);
 
-    this._getMovies(SortingType.COMMENTED)
-      .slice(0, MoviesCount.COMMENTED)
-      .forEach((movie) => this._renderMovie(commentedContainer, movie));
-
+    this._renderMovies(commentedContainer, movies);
     render(this._moviesView, commentedView);
   }
 
   _renderAllMovies() {
-    this._renderMovies(0, MoviesCount.PER_STEP);
+    const moviesContainer = this._allMoviesView.getContainer();
+    const moviesCount = this._getMovies().length;
+    const movies = this._getMovies()
+      .slice(0, Math.min(moviesCount, MoviesCount.PER_STEP));
+
+    this._renderMovies(moviesContainer, movies);
 
     if (!this._moviesView.getElement()
       .contains(this._allMoviesView.getElement())) {
       render(this._moviesView, this._allMoviesView);
     }
 
-    if (this._getMovies().length > MoviesCount.PER_STEP) {
+    if (moviesCount > MoviesCount.PER_STEP) {
       this._renderShowMoreButton();
     }
   }
@@ -224,14 +225,21 @@ export default class Movies {
   }
 
   _showMoreButtonClickHandler() {
-    this._renderMovies(
-      this._renderedMoviesCount,
+    const moviesCount = this._getMovies().length;
+    const container = this._allMoviesView.getContainer();
+
+    const newRenderedMoviesCount = Math.min(
+      moviesCount,
       this._renderedMoviesCount + MoviesCount.PER_STEP,
     );
 
-    this._renderedMoviesCount += MoviesCount.PER_STEP;
+    const movies = this._getMovies()
+      .slice(this._renderedMoviesCount, newRenderedMoviesCount);
 
-    if (this._renderedMoviesCount >= this._getMovies().length) {
+    this._renderMovies(container, movies);
+    this._renderedMoviesCount = newRenderedMoviesCount;
+
+    if (this._renderedMoviesCount >= moviesCount) {
       this._showMoreButtonView.removeElement();
       this._showMoreButtonView = null;
     }

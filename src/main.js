@@ -9,7 +9,7 @@ import {getComments} from './mocks/comments';
 import {getFilters} from './mocks/filters';
 import {render} from './helpers/render';
 
-const MOVIES_COUNT = 20;
+const MOVIES_COUNT = 17;
 const COMMENTS_COUNT = 10;
 
 const comments = getComments(COMMENTS_COUNT);
