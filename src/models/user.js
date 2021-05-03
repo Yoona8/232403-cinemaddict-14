@@ -14,4 +14,9 @@ export default class User extends Subject {
   getUser() {
     return this._user;
   }
+
+  updateUser(updateType, updatedUser) {
+    this._user = Object.assign({}, updatedUser);
+    this._notify(updateType, this._user);
+  }
 }

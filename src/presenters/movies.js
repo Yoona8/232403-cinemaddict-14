@@ -7,11 +7,11 @@ import TopRatedMoviesView from '../views/top-rated-movies';
 import AllMoviesView from '../views/all-movies';
 import CommentedMoviesView from '../views/commented-movies';
 import {render, RenderPosition} from '../helpers/render';
-import {SortingType, UserAction} from '../helpers/consts';
+import {SortingType, UpdateType, UserAction} from '../helpers/consts';
 import {
   sortMoviesByCommentsCountDown,
   sortMoviesByDateDown,
-  sortMoviesByRatingDown
+  sortMoviesByRatingDown, toggleItemInSet
 } from '../helpers/helpers';
 
 const MoviesCount = {
@@ -38,11 +38,14 @@ export default class Movies {
     this._allMoviesView = new AllMoviesView();
     this._showMoreButtonView = null;
 
+    this._viewChangeHandler = this._viewChangeHandler.bind(this);
+    this._moviesModelChangeHandler = this._moviesModelChangeHandler.bind(this);
     this._showMoreButtonClickHandler = this._showMoreButtonClickHandler
       .bind(this);
-    this._movieChangeHandler = this._movieChangeHandler.bind(this);
     this._detailsOpenHandler = this._detailsOpenHandler.bind(this);
     this._sortingChangeHandler = this._sortingChangeHandler.bind(this);
+
+    this._moviesModel.addObserver(this._moviesModelChangeHandler);
   }
 
   init() {
@@ -73,7 +76,7 @@ export default class Movies {
   _renderMovie(container, movie) {
     const moviePresenter = new MoviePresenter(
       container,
-      this._movieChangeHandler,
+      this._viewChangeHandler,
     );
 
     moviePresenter.addDetailsOpenHandler(this._detailsOpenHandler);
@@ -175,56 +178,38 @@ export default class Movies {
     }
   }
 
-  _movieChangeHandler(userAction, updatedMovie) {
+  _moviesModelChangeHandler(updateType, updatedMovie) {
     const movieId = updatedMovie.id;
 
-    switch (userAction) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this._moviePresenters
+          .filter((item) => item.movieId === movieId)
+          .forEach((item) => item.presenter
+            .init(updatedMovie, this._userModel.getUser()));
+        break;
+    }
+  }
+
+  _viewChangeHandler(actionType, updateType, updatedMovie) {
+    const movieId = updatedMovie.id;
+    const updatedUser = Object.assign({}, this._userModel.getUser());
+    const {favorites, watchlist, watched} = updatedUser;
+
+    switch (actionType) {
       case UserAction.FAVORITE:
-        this._favoriteToggleHandler(movieId);
+        toggleItemInSet(favorites, movieId);
         break;
       case UserAction.WATCHLIST:
-        this._toggleWatchlistHandler(movieId);
+        toggleItemInSet(watchlist, movieId);
         break;
       case UserAction.WATCHED:
-        this._toggleWatchedHandler(movieId);
+        toggleItemInSet(watched, movieId);
+        break;
     }
 
-    this._moviePresenters
-      .filter((item) => item.movieId === movieId)
-      .forEach((item) => item.presenter.init(updatedMovie, this._user));
-  }
-
-  _favoriteToggleHandler(movieId) {
-    const {favorites} = this._user;
-
-    if (favorites.has(movieId)) {
-      favorites.delete(movieId);
-      return;
-    }
-
-    favorites.add(movieId);
-  }
-
-  _toggleWatchlistHandler(movieId) {
-    const {watchlist} = this._user;
-
-    if (watchlist.has(movieId)) {
-      watchlist.delete(movieId);
-      return;
-    }
-
-    watchlist.add(movieId);
-  }
-
-  _toggleWatchedHandler(movieId) {
-    const {watched} = this._user;
-
-    if (watched.has(movieId)) {
-      watched.delete(movieId);
-      return;
-    }
-
-    watched.add(movieId);
+    this._userModel.updateUser(updateType, updatedUser);
+    this._moviesModel.updateMovie(updateType, updatedMovie);
   }
 
   _showMoreButtonClickHandler() {

@@ -2,7 +2,7 @@ import MovieView from '../views/movie';
 import DetailsModalView from '../views/details-modal';
 import {render, replace} from '../helpers/render';
 import {checkEscKeyDown} from '../helpers/helpers';
-import {UserAction} from '../helpers/consts';
+import {UpdateType, UserAction} from '../helpers/consts';
 
 const BODY_NO_SCROLL_CLASS_NAME = 'hide-overflow';
 
@@ -99,15 +99,27 @@ export default class Movie {
   }
 
   _favoriteToggleHandler() {
-    this._changeMovie(UserAction.FAVORITE, Object.assign({}, this._movie));
+    this._changeMovie(
+      UserAction.FAVORITE,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie),
+    );
   }
 
   _watchedToggleHandler() {
-    this._changeMovie(UserAction.WATCHED, Object.assign({}, this._movie));
+    this._changeMovie(
+      UserAction.WATCHED,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie),
+    );
   }
 
   _watchlistToggleHandler() {
-    this._changeMovie(UserAction.WATCHLIST, Object.assign({}, this._movie));
+    this._changeMovie(
+      UserAction.WATCHLIST,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie),
+    );
   }
 
   addDetailsOpenHandler(cb) {

@@ -46,18 +46,13 @@ const checkEscKeyDown = (key) => {
   return pressedKey === 'escape' || pressedKey === 'esc';
 };
 
-const updateItem = (items, updatedItem) => {
-  const index = items.findIndex((item) => item.id === updatedItem.id);
-
-  if (index === -1) {
-    return items;
+const toggleItemInSet = (set, item) => {
+  if (set.has(item)) {
+    set.delete(item);
+    return;
   }
 
-  return [
-    ...items.slice(0, index),
-    updatedItem,
-    ...items.slice(index + 1),
-  ];
+  set.add(item);
 };
 
 const sortMoviesByDateDown = (movieA, movieB) => {
@@ -80,7 +75,7 @@ export {
   formatCommentDate,
   trimText,
   checkEscKeyDown,
-  updateItem,
+  toggleItemInSet,
   sortMoviesByDateDown,
   sortMoviesByRatingDown,
   sortMoviesByCommentsCountDown

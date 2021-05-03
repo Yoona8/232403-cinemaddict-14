@@ -12,4 +12,17 @@ const SortingType = {
   COMMENTED: 3,
 };
 
-export {EMOJIS, UserAction, SortingType};
+const UpdateType = {
+  PATCH: 0,
+  MINOR: 1,
+  MAJOR: 2,
+};
+
+const FilterType = {
+  ALL: 0,
+  WATCHLIST: 1,
+  HISTORY: 2,
+  FAVORITES: 2,
+};
+
+export {EMOJIS, UserAction, SortingType, UpdateType, FilterType};
