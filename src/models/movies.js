@@ -1,5 +1,8 @@
-export default class Movies {
+import Subject from '../helpers/subject';
+
+export default class Movies extends Subject {
   constructor() {
+    super();
     this._movies = [];
   }
 
@@ -10,6 +13,4 @@ export default class Movies {
   getMovies() {
     return this._movies;
   }
-
-  updateMovie() {}
 }
