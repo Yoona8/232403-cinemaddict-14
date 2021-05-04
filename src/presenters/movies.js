@@ -198,13 +198,13 @@ export default class Movies {
 
     switch (actionType) {
       case UserAction.FAVORITE:
-        toggleItemInSet(favorites, movieId);
+        updatedUser.favorites = toggleItemInSet(favorites, movieId);
         break;
       case UserAction.WATCHLIST:
-        toggleItemInSet(watchlist, movieId);
+        updatedUser.watchlist = toggleItemInSet(watchlist, movieId);
         break;
       case UserAction.WATCHED:
-        toggleItemInSet(watched, movieId);
+        updatedUser.watched = toggleItemInSet(watched, movieId);
         break;
     }
 

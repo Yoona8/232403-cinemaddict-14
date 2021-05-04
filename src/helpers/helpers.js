@@ -47,12 +47,15 @@ const checkEscKeyDown = (key) => {
 };
 
 const toggleItemInSet = (set, item) => {
+  set = new Set([...set]);
+
   if (set.has(item)) {
     set.delete(item);
-    return;
+  } else {
+    set.add(item);
   }
 
-  set.add(item);
+  return set;
 };
 
 const sortMoviesByDateDown = (movieA, movieB) => {
