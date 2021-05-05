@@ -21,8 +21,8 @@ const UpdateType = {
 const FilterType = {
   ALL: 0,
   WATCHLIST: 1,
-  HISTORY: 2,
-  FAVORITES: 2,
+  WATCHED: 2,
+  FAVORITES: 3,
 };
 
 export {EMOJIS, UserAction, SortingType, UpdateType, FilterType};

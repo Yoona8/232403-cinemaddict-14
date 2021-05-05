@@ -10,14 +10,4 @@ const filterNameToFilterFunction = {
   },
 };
 
-const getFilters = (movies, user) => {
-  return Object.entries(filterNameToFilterFunction)
-    .map(([filterName, filterMovies]) => {
-      return {
-        name: filterName,
-        count: filterMovies(movies, user).length,
-      };
-    });
-};
-
-export {getFilters};
+export {filterNameToFilterFunction};
