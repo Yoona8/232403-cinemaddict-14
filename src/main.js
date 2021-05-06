@@ -31,7 +31,13 @@ render(document.querySelector('.header'), new UserView(userModel.getUser()));
 const mainElement = document.querySelector('.main');
 
 new FiltersPresenter(mainElement, filterModel, userModel).init();
-new MoviesPresenter(mainElement, moviesModel, commentsModel, userModel).init();
+new MoviesPresenter(
+  mainElement,
+  moviesModel,
+  commentsModel,
+  userModel,
+  filterModel,
+).init();
 
 render(
   document.querySelector('.footer__statistics'),

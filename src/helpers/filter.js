@@ -1,13 +1,15 @@
-const filterNameToFilterFunction = {
-  'Watchlist': (movies, user) => {
+import {FilterType} from './consts';
+
+const filter = {
+  [FilterType.WATCHLIST]: (movies, user) => {
     return movies.filter((movie) => user.watchlist.has(movie.id));
   },
-  'History': (movies, user) => {
+  [FilterType.WATCHED]: (movies, user) => {
     return movies.filter((movie) => user.watched.has(movie.id));
   },
-  'Favorites': (movies, user) => {
+  [FilterType.FAVORITES]: (movies, user) => {
     return movies.filter((movie) => user.favorites.has(movie.id));
   },
 };
 
-export {filterNameToFilterFunction};
+export {filter};

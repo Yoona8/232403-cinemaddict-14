@@ -6,13 +6,19 @@ import ShowMoreButtonView from '../views/show-more-button';
 import TopRatedMoviesView from '../views/top-rated-movies';
 import AllMoviesView from '../views/all-movies';
 import CommentedMoviesView from '../views/commented-movies';
-import {render, RenderPosition} from '../helpers/render';
-import {SortingType, UpdateType, UserAction} from '../helpers/consts';
+import {render, RenderPosition, replace} from '../helpers/render';
+import {
+  FilterType,
+  SortingType,
+  UpdateType,
+  UserAction
+} from '../helpers/consts';
 import {
   sortMoviesByCommentsCountDown,
   sortMoviesByDateDown,
   sortMoviesByRatingDown, toggleItemInSet
 } from '../helpers/helpers';
+import {filter} from '../helpers/filter';
 
 const MoviesCount = {
   TOP_RATED: 2,
@@ -21,11 +27,12 @@ const MoviesCount = {
 };
 
 export default class Movies {
-  constructor(container, moviesModel, commentsModel, userModel) {
+  constructor(container, moviesModel, commentsModel, userModel, filterModel) {
     this._container = container;
     this._moviesModel = moviesModel;
     this._commentsModel = commentsModel;
     this._userModel = userModel;
+    this._filterModel = filterModel;
 
     this._renderedMoviesCount = MoviesCount.PER_STEP;
     this._currentSortingType = SortingType.DEFAULT;
@@ -33,19 +40,20 @@ export default class Movies {
     this._moviePresenters = [];
     this._currentDetailsPresenter = null;
 
-    this._sortingView = new SortingView();
     this._moviesView = new MoviesView();
     this._allMoviesView = new AllMoviesView();
+    this._sortingView = null;
     this._showMoreButtonView = null;
 
     this._viewChangeHandler = this._viewChangeHandler.bind(this);
-    this._moviesModelChangeHandler = this._moviesModelChangeHandler.bind(this);
+    this._modelChangeHandler = this._modelChangeHandler.bind(this);
     this._showMoreButtonClickHandler = this._showMoreButtonClickHandler
       .bind(this);
     this._detailsOpenHandler = this._detailsOpenHandler.bind(this);
     this._sortingChangeHandler = this._sortingChangeHandler.bind(this);
 
-    this._moviesModel.addObserver(this._moviesModelChangeHandler);
+    this._moviesModel.addObserver(this._modelChangeHandler);
+    this._filterModel.addObserver(this._modelChangeHandler);
   }
 
   init() {
@@ -53,23 +61,35 @@ export default class Movies {
   }
 
   _getMovies(sortingType = this._currentSortingType) {
+    const filterType = this._filterModel.getFilter();
+    const movies = this._moviesModel.getMovies().slice();
+    const filteredMovies = filterType === FilterType.ALL
+      ? movies
+      : filter[filterType](movies, this._userModel.getUser());
+
     switch (sortingType) {
       case SortingType.DATE:
-        return this._moviesModel.getMovies()
-          .slice().sort(sortMoviesByDateDown);
+        return filteredMovies.sort(sortMoviesByDateDown);
       case SortingType.RATING:
-        return this._moviesModel.getMovies()
-          .slice().sort(sortMoviesByRatingDown);
+        return filteredMovies.sort(sortMoviesByRatingDown);
       case SortingType.COMMENTED:
-        return this._moviesModel.getMovies()
-          .slice().sort(sortMoviesByCommentsCountDown);
+        return filteredMovies.sort(sortMoviesByCommentsCountDown);
       default:
-        return this._moviesModel.getMovies();
+        return filteredMovies;
     }
   }
 
   _renderSorting() {
+    const prevSortingView = this._sortingView;
+
+    this._sortingView = new SortingView();
     this._sortingView.addSortingTypeClickHandler(this._sortingChangeHandler);
+
+    if (prevSortingView) {
+      replace(this._sortingView, prevSortingView);
+      return;
+    }
+
     render(this._container, this._sortingView);
   }
 
@@ -122,7 +142,7 @@ export default class Movies {
     const moviesContainer = this._allMoviesView.getContainer();
     const moviesCount = this._getMovies().length;
     const movies = this._getMovies()
-      .slice(0, Math.min(moviesCount, MoviesCount.PER_STEP));
+      .slice(0, Math.min(moviesCount, this._renderedMoviesCount));
 
     this._renderMovies(moviesContainer, movies);
 
@@ -178,7 +198,7 @@ export default class Movies {
     }
   }
 
-  _moviesModelChangeHandler(updateType, updatedMovie) {
+  _modelChangeHandler(updateType, updatedMovie) {
     const movieId = updatedMovie.id;
 
     switch (updateType) {
@@ -187,6 +207,16 @@ export default class Movies {
           .filter((item) => item.movieId === movieId)
           .forEach((item) => item.presenter
             .init(updatedMovie, this._userModel.getUser()));
+        break;
+      case UpdateType.MINOR:
+        this._clearAllMovies();
+        this._renderAllMovies();
+        break;
+      case UpdateType.MAJOR:
+        this._currentSortingType = SortingType.DEFAULT;
+        this._renderSorting();
+        this._clearAllMovies();
+        this._renderAllMovies();
         break;
     }
   }
