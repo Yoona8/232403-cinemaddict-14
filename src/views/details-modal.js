@@ -1,3 +1,4 @@
+import he from 'he';
 import SmartView from './smart';
 import {
   formatReleaseDate,
@@ -32,6 +33,7 @@ const getCommentTemplate = (comment) => {
   } = comment;
 
   const formattedDate = formatCommentDate(date);
+  const sanitizedMessage = he.encode(message);
 
   return `
     <li class="film-details__comment">
@@ -43,7 +45,7 @@ const getCommentTemplate = (comment) => {
         >
       </span>
       <div>
-        <p class="film-details__comment-text">${message}</p>
+        <p class="film-details__comment-text">${sanitizedMessage}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${formattedDate}</span>
@@ -134,6 +136,7 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
   const toWatchChecked = watchlist.has(id) ? 'checked' : '';
   const favoriteChecked = favorites.has(id) ? 'checked' : '';
   const commentsCount = comments.size;
+  const sanitizedMessage = he.encode(commentTextS);
   const movieCommentMessages = commentMessages.filter((message) => {
     return comments.has(message.id);
   });
@@ -282,7 +285,7 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
                   placeholder="Select reaction below and write comment here"
                   name="comment"
                   data-comment-field
-                >${commentTextS}</textarea>
+                >${sanitizedMessage}</textarea>
               </label>
 
               <div class="film-details__emoji-list" data-emoji-list>
