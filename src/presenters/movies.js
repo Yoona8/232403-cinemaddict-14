@@ -97,15 +97,11 @@ export default class Movies {
     const moviePresenter = new MoviePresenter(
       container,
       this._viewChangeHandler,
+      this._commentsModel,
     );
 
     moviePresenter.addDetailsOpenHandler(this._detailsOpenHandler);
-
-    moviePresenter.init(
-      movie,
-      this._userModel.getUser(),
-      this._commentsModel.getComments(),
-    );
+    moviePresenter.init(movie, this._userModel.getUser());
 
     this._moviePresenters.push({
       movieId: movie.id,
@@ -229,17 +225,23 @@ export default class Movies {
     switch (actionType) {
       case UserAction.FAVORITE:
         updatedUser.favorites = toggleItemInSet(favorites, movieId);
+        this._userModel.updateUser(updateType, updatedUser);
+        this._moviesModel.updateMovie(updateType, updatedMovie);
         break;
       case UserAction.WATCHLIST:
         updatedUser.watchlist = toggleItemInSet(watchlist, movieId);
+        this._userModel.updateUser(updateType, updatedUser);
+        this._moviesModel.updateMovie(updateType, updatedMovie);
         break;
       case UserAction.WATCHED:
         updatedUser.watched = toggleItemInSet(watched, movieId);
+        this._userModel.updateUser(updateType, updatedUser);
+        this._moviesModel.updateMovie(updateType, updatedMovie);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this._moviesModel.updateMovie(updateType, updatedMovie);
         break;
     }
-
-    this._userModel.updateUser(updateType, updatedUser);
-    this._moviesModel.updateMovie(updateType, updatedMovie);
   }
 
   _showMoreButtonClickHandler() {

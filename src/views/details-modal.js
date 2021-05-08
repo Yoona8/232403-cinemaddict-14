@@ -24,6 +24,7 @@ const getGenresTemplate = (genres) => {
 
 const getCommentTemplate = (comment) => {
   const {
+    id,
     author,
     emoji,
     message,
@@ -46,7 +47,11 @@ const getCommentTemplate = (comment) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${formattedDate}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button
+            class="film-details__comment-delete"
+            type="button"
+            data-delete-comment="${id}"
+          >Delete</button>
         </p>
       </div>
     </li>
@@ -59,7 +64,9 @@ const getCommentsTemplate = (comments) => {
     .join('');
 
   return `
-    <ul class="film-details__comments-list">${commentsTemplate}</ul>
+    <ul class="film-details__comments-list" data-comments>
+      ${commentsTemplate}
+    </ul>
   `;
 };
 
@@ -300,6 +307,8 @@ export default class DetailsModal extends SmartView {
     this._watchlistChangeHandler = this._watchlistChangeHandler.bind(this);
     this._favoriteChangeHandler = this._favoriteChangeHandler.bind(this);
     this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler
+      .bind(this);
 
     this._addInnerHandlers();
   }
@@ -314,6 +323,20 @@ export default class DetailsModal extends SmartView {
     this.addFavoriteChangeHandler(this._callback.favoriteChangeHandler);
     this.addWatchedChangeHandler(this._callback.watchedChangeHandler);
     this.addWatchlistChangeHandler(this._callback.watchlistChangeHandler);
+    this.addCommentDeleteClickHandler(this._callback.commentDeleteClickHandler);
+  }
+
+  _updateElement() {
+    const currentScrollTop = this.getElement().scrollTop;
+    super._updateElement();
+    this.getElement().scrollTop = currentScrollTop;
+  }
+
+  updateComments(movie, comments) {
+    this._comments = comments;
+    this._updateState({
+      comments: new Set([...movie.comments]),
+    });
   }
 
   _closeClickHandler(evt) {
@@ -335,13 +358,18 @@ export default class DetailsModal extends SmartView {
   }
 
   _emojiChangeHandler(evt) {
-    const currentScrollTop = this.getElement().scrollTop;
-
     this._updateState({
       commentEmojiS: evt.target.value,
     });
+  }
 
-    this.getElement().scrollTop = currentScrollTop;
+  _commentDeleteClickHandler(evt) {
+    const commentId = evt.target.dataset.deleteComment;
+
+    if (commentId) {
+      evt.preventDefault();
+      this._callback.commentDeleteClickHandler(commentId);
+    }
   }
 
   _addInnerHandlers() {
@@ -372,6 +400,12 @@ export default class DetailsModal extends SmartView {
     this._callback.favoriteChangeHandler = cb;
     this.getElement().querySelector('[data-favorite]')
       .addEventListener('change', this._favoriteChangeHandler);
+  }
+
+  addCommentDeleteClickHandler(cb) {
+    this._callback.commentDeleteClickHandler = cb;
+    this.getElement().querySelector('[data-comments]')
+      .addEventListener('click', this._commentDeleteClickHandler);
   }
 
   static parseDataToState(movie) {

@@ -3,6 +3,8 @@ const UserAction = {
   FAVORITE: 0,
   WATCHLIST: 1,
   WATCHED: 2,
+  DELETE_COMMENT: 3,
+  ADD_COMMENT: 4,
 };
 
 const SortingType = {

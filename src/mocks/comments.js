@@ -23,7 +23,7 @@ const getComment = (id) => {
 };
 
 const getComments = (count) => {
-  return new Array(count).fill('').map((item, index) => getComment(index));
+  return new Array(count).fill('').map((item, index) => getComment(`${index}`));
 };
 
 export {getComments};
