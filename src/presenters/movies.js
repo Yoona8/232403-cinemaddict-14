@@ -239,6 +239,7 @@ export default class Movies {
         this._moviesModel.updateMovie(updateType, updatedMovie);
         break;
       case UserAction.DELETE_COMMENT:
+      case UserAction.ADD_COMMENT:
         this._moviesModel.updateMovie(updateType, updatedMovie);
         break;
     }

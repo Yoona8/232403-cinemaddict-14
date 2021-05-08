@@ -27,6 +27,7 @@ export default class Movie {
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
     this._watchlistToggleHandler = this._watchlistToggleHandler.bind(this);
     this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
+    this._commentSubmitHandler = this._commentSubmitHandler.bind(this);
   }
 
   init(movie, user) {
@@ -82,6 +83,7 @@ export default class Movie {
       .addWatchlistChangeHandler(this._watchlistToggleHandler);
     this._detailsModalView
       .addCommentDeleteClickHandler(this._commentDeleteHandler);
+    this._detailsModalView.addCommentSubmitHandler(this._commentSubmitHandler);
 
     this._commentsModel.addObserver(this._modelChangeHandler);
 
@@ -98,8 +100,9 @@ export default class Movie {
     this._commentsModel.removeObserver(this._modelChangeHandler);
   }
 
-  _modelChangeHandler(updateType, update) {
-    this._detailsModalView.updateComments(this._movie, update);
+  _modelChangeHandler() {
+    this._detailsModalView
+      .updateComments(this._movie, this._commentsModel.getComments());
   }
 
   _detailsEscKeyDownHandler(evt) {
@@ -143,6 +146,20 @@ export default class Movie {
     );
 
     this._commentsModel.deleteComment(UpdateType.PATCH, commentId);
+  }
+
+  _commentSubmitHandler(comment) {
+    comment.id = String(this._commentsModel.getComments().length);
+
+    const comments = new Set([...this._movie.comments, comment.id]);
+
+    this._changeMovie(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie, {comments}),
+    );
+
+    this._commentsModel.addComment(UpdateType.PATCH, comment);
   }
 
   addDetailsOpenHandler(cb) {

@@ -46,6 +46,13 @@ const checkEscKeyDown = (key) => {
   return pressedKey === 'escape' || pressedKey === 'esc';
 };
 
+const checkCtrlEnterKeyDown = (evt) => {
+  const pressedKey = evt.key.toLowerCase();
+  const isCtrl = evt.ctrlKey || evt.metaKey;
+
+  return pressedKey === 'enter' && isCtrl;
+};
+
 const toggleItemInSet = (set, item) => {
   set = new Set([...set]);
 
@@ -78,6 +85,7 @@ export {
   formatCommentDate,
   trimText,
   checkEscKeyDown,
+  checkCtrlEnterKeyDown,
   toggleItemInSet,
   sortMoviesByDateDown,
   sortMoviesByRatingDown,
