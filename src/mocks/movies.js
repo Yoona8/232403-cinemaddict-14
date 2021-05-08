@@ -46,12 +46,25 @@ const Rating = {
   MAX: 10,
 };
 
-const getRandomCommentIds = (comments) => {
-  const length = getRandomInteger(0, COMMENTS_MAX_COUNT);
+const getRandomCommentIds = (comments, id) => {
+  const length = getRandomInteger(0, Math.min(
+    COMMENTS_MAX_COUNT,
+    comments.length,
+  ));
 
-  return new Array(length).fill('').map(() => {
-    return comments[getRandomInteger(0, comments.length - 1)].id;
-  });
+  return new Array(length)
+    .fill('')
+    .map(() => {
+      const comment = comments[getRandomInteger(0, comments.length - 1)];
+
+      if (comment.movieId !== null) {
+        return;
+      }
+
+      comment.movieId = id;
+      return comment.id;
+    })
+    .filter((comment) => comment);
 };
 
 const getMovie = (id, comments) => {
@@ -73,7 +86,7 @@ const getMovie = (id, comments) => {
     duration: getRandomInteger(43, 240),
     genres,
     description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
-    comments: new Set(getRandomCommentIds(comments)),
+    comments: new Set(getRandomCommentIds(comments, id)),
   };
 };
 

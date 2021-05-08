@@ -3,12 +3,28 @@ const UserAction = {
   FAVORITE: 0,
   WATCHLIST: 1,
   WATCHED: 2,
+  DELETE_COMMENT: 3,
+  ADD_COMMENT: 4,
 };
 
 const SortingType = {
   DEFAULT: 0,
   DATE: 1,
   RATING: 2,
+  COMMENTED: 3,
 };
 
-export {EMOJIS, UserAction, SortingType};
+const UpdateType = {
+  PATCH: 0,
+  MINOR: 1,
+  MAJOR: 2,
+};
+
+const FilterType = {
+  ALL: 0,
+  WATCHLIST: 1,
+  WATCHED: 2,
+  FAVORITES: 3,
+};
+
+export {EMOJIS, UserAction, SortingType, UpdateType, FilterType};

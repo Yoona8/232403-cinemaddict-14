@@ -1,8 +1,9 @@
+import he from 'he';
 import SmartView from './smart';
 import {
   formatReleaseDate,
   formatDuration,
-  formatCommentDate
+  formatCommentDate, checkCtrlEnterKeyDown
 } from '../helpers/helpers';
 import {EMOJIS} from '../helpers/consts';
 
@@ -24,6 +25,7 @@ const getGenresTemplate = (genres) => {
 
 const getCommentTemplate = (comment) => {
   const {
+    id,
     author,
     emoji,
     message,
@@ -31,6 +33,7 @@ const getCommentTemplate = (comment) => {
   } = comment;
 
   const formattedDate = formatCommentDate(date);
+  const sanitizedMessage = he.encode(message);
 
   return `
     <li class="film-details__comment">
@@ -42,11 +45,15 @@ const getCommentTemplate = (comment) => {
         >
       </span>
       <div>
-        <p class="film-details__comment-text">${message}</p>
+        <p class="film-details__comment-text">${sanitizedMessage}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${formattedDate}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button
+            class="film-details__comment-delete"
+            type="button"
+            data-delete-comment="${id}"
+          >Delete</button>
         </p>
       </div>
     </li>
@@ -59,7 +66,9 @@ const getCommentsTemplate = (comments) => {
     .join('');
 
   return `
-    <ul class="film-details__comments-list">${commentsTemplate}</ul>
+    <ul class="film-details__comments-list" data-comments>
+      ${commentsTemplate}
+    </ul>
   `;
 };
 
@@ -115,6 +124,7 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
     description,
     comments,
     commentEmojiS,
+    commentTextS,
   } = state;
 
   const {watched, watchlist, favorites} = user;
@@ -126,6 +136,7 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
   const toWatchChecked = watchlist.has(id) ? 'checked' : '';
   const favoriteChecked = favorites.has(id) ? 'checked' : '';
   const commentsCount = comments.size;
+  const sanitizedMessage = he.encode(commentTextS);
   const movieCommentMessages = commentMessages.filter((message) => {
     return comments.has(message.id);
   });
@@ -138,7 +149,7 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
 
   return `
     <section class="film-details">
-      <form class="film-details__inner" action="" method="get">
+      <form class="film-details__inner" action="" method="get" data-form>
         <div class="film-details__top-container">
           <div class="film-details__close">
             <button class="film-details__close-btn" type="button" data-close>
@@ -273,7 +284,8 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
                   class="film-details__comment-input"
                   placeholder="Select reaction below and write comment here"
                   name="comment"
-                ></textarea>
+                  data-comment-field
+                >${sanitizedMessage}</textarea>
               </label>
 
               <div class="film-details__emoji-list" data-emoji-list>
@@ -300,6 +312,10 @@ export default class DetailsModal extends SmartView {
     this._watchlistChangeHandler = this._watchlistChangeHandler.bind(this);
     this._favoriteChangeHandler = this._favoriteChangeHandler.bind(this);
     this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler
+      .bind(this);
+    this._commentSubmitHandler = this._commentSubmitHandler.bind(this);
+    this._commentInputHandler = this._commentInputHandler.bind(this);
 
     this._addInnerHandlers();
   }
@@ -314,6 +330,21 @@ export default class DetailsModal extends SmartView {
     this.addFavoriteChangeHandler(this._callback.favoriteChangeHandler);
     this.addWatchedChangeHandler(this._callback.watchedChangeHandler);
     this.addWatchlistChangeHandler(this._callback.watchlistChangeHandler);
+    this.addCommentDeleteClickHandler(this._callback.commentDeleteClickHandler);
+    this.addCommentSubmitHandler(this._callback.commentSubmitHandler);
+  }
+
+  _updateElement() {
+    const currentScrollTop = this.getElement().scrollTop;
+    super._updateElement();
+    this.getElement().scrollTop = currentScrollTop;
+  }
+
+  updateComments(movie, comments) {
+    this._comments = comments;
+    this._updateState({
+      comments: new Set([...movie.comments]),
+    });
   }
 
   _closeClickHandler(evt) {
@@ -335,18 +366,55 @@ export default class DetailsModal extends SmartView {
   }
 
   _emojiChangeHandler(evt) {
-    const currentScrollTop = this.getElement().scrollTop;
-
     this._updateState({
       commentEmojiS: evt.target.value,
     });
+  }
 
-    this.getElement().scrollTop = currentScrollTop;
+  _commentDeleteClickHandler(evt) {
+    const commentId = evt.target.dataset.deleteComment;
+
+    if (commentId) {
+      evt.preventDefault();
+      this._callback.commentDeleteClickHandler(commentId);
+    }
+  }
+
+  _commentSubmitHandler(evt) {
+    if (!this._state.commentEmojiS) {
+      return;
+    }
+
+    if (checkCtrlEnterKeyDown(evt)) {
+      evt.preventDefault();
+
+      const comment = {
+        movieId: this._state.id,
+        author: 'John Snow',
+        message: this._state.commentTextS,
+        emoji: this._state.commentEmojiS,
+        date: new Date(),
+      };
+
+      this._updateState({
+        commentEmojiS: null,
+        commentTextS: '',
+      }, false);
+      this._callback.commentSubmitHandler(comment);
+    }
+  }
+
+  _commentInputHandler(evt) {
+    this._updateState({
+      commentTextS: evt.target.value,
+    }, false);
   }
 
   _addInnerHandlers() {
     this.getElement().querySelector('[data-emoji-list]')
       .addEventListener('change', this._emojiChangeHandler);
+    this.getElement().querySelector('[data-comment-field]')
+      .addEventListener('input', this._commentInputHandler);
   }
 
   addCloseClickHandler(cb) {
@@ -374,9 +442,22 @@ export default class DetailsModal extends SmartView {
       .addEventListener('change', this._favoriteChangeHandler);
   }
 
+  addCommentDeleteClickHandler(cb) {
+    this._callback.commentDeleteClickHandler = cb;
+    this.getElement().querySelector('[data-comments]')
+      .addEventListener('click', this._commentDeleteClickHandler);
+  }
+
+  addCommentSubmitHandler(cb) {
+    this._callback.commentSubmitHandler = cb;
+    this.getElement().querySelector('[data-comment-field]')
+      .addEventListener('keydown', this._commentSubmitHandler);
+  }
+
   static parseDataToState(movie) {
     return Object.assign({}, movie, {
       commentEmojiS: null,
+      commentTextS: '',
     });
   }
 
@@ -384,6 +465,7 @@ export default class DetailsModal extends SmartView {
     const data = Object.assign({}, state);
 
     delete data.commentEmojiS;
+    delete data.commentTextS;
     return data;
   }
 }

@@ -2,35 +2,37 @@ import MovieView from '../views/movie';
 import DetailsModalView from '../views/details-modal';
 import {render, replace} from '../helpers/render';
 import {checkEscKeyDown} from '../helpers/helpers';
-import {UserAction} from '../helpers/consts';
+import {UpdateType, UserAction} from '../helpers/consts';
 
 const BODY_NO_SCROLL_CLASS_NAME = 'hide-overflow';
 
 export default class Movie {
-  constructor(container, movieChangeHandler) {
+  constructor(container, movieChangeHandler, commentsModel) {
     this._container = container;
     this._changeMovie = movieChangeHandler;
+    this._commentsModel = commentsModel;
 
     this._movie = null;
     this._user = null;
-    this._comments = [];
 
     this._movieView = null;
     this._detailsModalView = null;
 
     this._callback = {};
 
+    this._modelChangeHandler = this._modelChangeHandler.bind(this);
     this._detailsEscKeyDownHandler = this._detailsEscKeyDownHandler
       .bind(this);
     this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
     this._watchlistToggleHandler = this._watchlistToggleHandler.bind(this);
+    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
+    this._commentSubmitHandler = this._commentSubmitHandler.bind(this);
   }
 
-  init(movie, user, comments) {
+  init(movie, user) {
     this._user = user || this._user;
     this._movie = movie;
-    this._comments = comments || this._comments;
 
     const prevMovieView = this._movieView;
 
@@ -70,7 +72,7 @@ export default class Movie {
     this._detailsModalView = new DetailsModalView(
       this._movie,
       this._user,
-      this._comments,
+      this._commentsModel.getComments(),
     );
 
     this._detailsModalView.addCloseClickHandler(() => this._closeDetails());
@@ -79,6 +81,11 @@ export default class Movie {
     this._detailsModalView.addWatchedChangeHandler(this._watchedToggleHandler);
     this._detailsModalView
       .addWatchlistChangeHandler(this._watchlistToggleHandler);
+    this._detailsModalView
+      .addCommentDeleteClickHandler(this._commentDeleteHandler);
+    this._detailsModalView.addCommentSubmitHandler(this._commentSubmitHandler);
+
+    this._commentsModel.addObserver(this._modelChangeHandler);
 
     document.addEventListener('keydown', this._detailsEscKeyDownHandler);
     document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
@@ -90,6 +97,12 @@ export default class Movie {
     document.removeEventListener('keydown', this._detailsEscKeyDownHandler);
     this._detailsModalView.removeElement();
     this._detailsModalView = null;
+    this._commentsModel.removeObserver(this._modelChangeHandler);
+  }
+
+  _modelChangeHandler() {
+    this._detailsModalView
+      .updateComments(this._movie, this._commentsModel.getComments());
   }
 
   _detailsEscKeyDownHandler(evt) {
@@ -99,15 +112,54 @@ export default class Movie {
   }
 
   _favoriteToggleHandler() {
-    this._changeMovie(UserAction.FAVORITE, Object.assign({}, this._movie));
+    this._changeMovie(
+      UserAction.FAVORITE,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie),
+    );
   }
 
   _watchedToggleHandler() {
-    this._changeMovie(UserAction.WATCHED, Object.assign({}, this._movie));
+    this._changeMovie(
+      UserAction.WATCHED,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie),
+    );
   }
 
   _watchlistToggleHandler() {
-    this._changeMovie(UserAction.WATCHLIST, Object.assign({}, this._movie));
+    this._changeMovie(
+      UserAction.WATCHLIST,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie),
+    );
+  }
+
+  _commentDeleteHandler(commentId) {
+    const comments = new Set([...this._movie.comments]);
+    comments.delete(commentId);
+
+    this._changeMovie(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie, {comments}),
+    );
+
+    this._commentsModel.deleteComment(UpdateType.PATCH, commentId);
+  }
+
+  _commentSubmitHandler(comment) {
+    comment.id = String(this._commentsModel.getComments().length);
+
+    const comments = new Set([...this._movie.comments, comment.id]);
+
+    this._changeMovie(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      Object.assign({}, this._movie, {comments}),
+    );
+
+    this._commentsModel.addComment(UpdateType.PATCH, comment);
   }
 
   addDetailsOpenHandler(cb) {

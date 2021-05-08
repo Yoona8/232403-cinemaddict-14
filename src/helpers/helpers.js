@@ -46,18 +46,23 @@ const checkEscKeyDown = (key) => {
   return pressedKey === 'escape' || pressedKey === 'esc';
 };
 
-const updateItem = (items, updatedItem) => {
-  const index = items.findIndex((item) => item.id === updatedItem.id);
+const checkCtrlEnterKeyDown = (evt) => {
+  const pressedKey = evt.key.toLowerCase();
+  const isCtrl = evt.ctrlKey || evt.metaKey;
 
-  if (index === -1) {
-    return items;
+  return pressedKey === 'enter' && isCtrl;
+};
+
+const toggleItemInSet = (set, item) => {
+  set = new Set([...set]);
+
+  if (set.has(item)) {
+    set.delete(item);
+  } else {
+    set.add(item);
   }
 
-  return [
-    ...items.slice(0, index),
-    updatedItem,
-    ...items.slice(index + 1),
-  ];
+  return set;
 };
 
 const sortMoviesByDateDown = (movieA, movieB) => {
@@ -68,6 +73,10 @@ const sortMoviesByRatingDown = (movieA, movieB) => {
   return movieB.rating - movieA.rating;
 };
 
+const sortMoviesByCommentsCountDown = (movieA, movieB) => {
+  return movieB.comments.size - movieA.comments.size;
+};
+
 export {
   getRandomInteger,
   getYear,
@@ -76,7 +85,9 @@ export {
   formatCommentDate,
   trimText,
   checkEscKeyDown,
-  updateItem,
+  checkCtrlEnterKeyDown,
+  toggleItemInSet,
   sortMoviesByDateDown,
-  sortMoviesByRatingDown
+  sortMoviesByRatingDown,
+  sortMoviesByCommentsCountDown
 };
