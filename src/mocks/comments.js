@@ -15,7 +15,7 @@ const getComment = (id) => {
   return {
     id,
     author: 'John Snow',
-    movieId: '0',
+    movieId: null,
     message: COMMENTS[getRandomInteger(0, COMMENTS.length - 1)],
     emoji: emojis[getRandomInteger(0, emojis.length - 1)],
     date: new Date(),
