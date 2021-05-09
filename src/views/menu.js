@@ -33,7 +33,7 @@ const getMenuTemplate = (filters, currentFilterType) => {
         >All movies</a>
         ${filtersTemplate}
       </div>
-      <a href="#stats" class="main-navigation__additional">Stats</a>
+      <a href="#stats" class="main-navigation__additional" data-stats>Stats</a>
     </nav>
   `.trim();
 };
@@ -46,6 +46,7 @@ export default class Menu extends AbstractView {
     this._currentFilterType = currentFilterType;
 
     this._filterClickHandler = this._filterClickHandler.bind(this);
+    this._statsClickHandler = this._statsClickHandler.bind(this);
   }
 
   _getTemplate() {
@@ -59,9 +60,19 @@ export default class Menu extends AbstractView {
     }
   }
 
+  _statsClickHandler(evt) {
+    evt.preventDefault();
+  }
+
   addFilterClickHandler(cb) {
     this._callback.filterClickHandler = cb;
     this.getElement().querySelector('[data-filters]')
       .addEventListener('click', this._filterClickHandler);
+  }
+
+  addStatsClickHandler(cb) {
+    this._callback.addStatsClickHandler = cb;
+    this.getElement().querySelector('[data-stats]')
+      .addEventListener('click', this._statsClickHandler);
   }
 }

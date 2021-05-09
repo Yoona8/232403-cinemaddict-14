@@ -23,6 +23,7 @@ export default class Filters {
 
     this._menuView = new MenuView(filters, this._filterModel.getFilter());
     this._menuView.addFilterClickHandler(this._filterChangeHandler);
+    this._menuView.addStatsClickHandler(() => {});
 
     if (prevMenuView === null) {
       render(this._container, this._menuView);
