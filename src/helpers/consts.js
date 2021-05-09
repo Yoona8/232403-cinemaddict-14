@@ -32,4 +32,11 @@ const FilterType = {
   FAVORITES: 3,
 };
 
-export {EMOJIS, UserAction, SortingType, UpdateType, FilterType, MenuItem};
+export {
+  EMOJIS,
+  UserAction,
+  SortingType,
+  UpdateType,
+  FilterType,
+  MenuItem
+};

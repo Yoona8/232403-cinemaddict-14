@@ -19,7 +19,8 @@ const getMovieTemplate = (movie, user) => {
   const {watched, watchlist, favorites} = user;
 
   const year = getYear(releaseDate);
-  const durationOutput = formatDuration(duration);
+  const {hours, minutes} = formatDuration(duration);
+  const durationOutput = `${hours === 0 ? '' : `${hours}h`} ${minutes}m`.trim();
   const genreOutput = genres[0] || '';
   const descriptionOutput = trimText(description, DESCRIPTION_LIMIT);
   const commentsCount = comments.size;

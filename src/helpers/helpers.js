@@ -27,9 +27,11 @@ const formatDuration = (duration) => {
 
   const hours = Math.trunc(duration / MINUTES_IN_HOUR);
   const minutes = duration % MINUTES_IN_HOUR;
-  const hoursString = hours === 0 ? '' : `${hours}h`;
 
-  return `${hoursString} ${minutes}m`.trim();
+  return {
+    hours,
+    minutes,
+  };
 };
 
 const trimText = (text, limit) => {

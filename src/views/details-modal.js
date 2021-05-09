@@ -130,7 +130,8 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
   const {watched, watchlist, favorites} = user;
 
   const formattedReleaseDate = formatReleaseDate(releaseDate);
-  const formattedDuration = formatDuration(duration);
+  const {hours, minutes} = formatDuration(duration);
+  const durationOutput = `${hours === 0 ? '' : `${hours}h`} ${minutes}m`.trim();
   const genresTemplate = genres.length === 0 ? '' : getGenresTemplate(genres);
   const watchedChecked = watched.has(id) ? 'checked' : '';
   const toWatchChecked = watchlist.has(id) ? 'checked' : '';
@@ -200,7 +201,7 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${formattedDuration}</td>
+                  <td class="film-details__cell">${durationOutput}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>

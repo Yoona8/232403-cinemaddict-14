@@ -31,7 +31,7 @@ commentsModel.setComments(comments);
 render(document.querySelector('.header'), new UserView(userModel.getUser()));
 
 const mainElement = document.querySelector('.main');
-const statsView = new StatsView();
+const statsView = new StatsView(userModel.getUser(), moviesModel.getMovies());
 const moviesPresenter = new MoviesPresenter(
   mainElement,
   moviesModel,
