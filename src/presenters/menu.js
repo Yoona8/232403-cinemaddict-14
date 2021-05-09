@@ -66,7 +66,6 @@ export default class Menu {
 
   _filterChangeHandler(filterType) {
     if (this._isStatsActive) {
-      this._isStatsActive = false;
       this._menuClickHandler(MenuItem.MOVIES);
     }
 
@@ -74,6 +73,7 @@ export default class Menu {
       return;
     }
 
+    this._isStatsActive = false;
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
@@ -83,7 +83,7 @@ export default class Menu {
     }
 
     this._isStatsActive = true;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
     this._menuClickHandler(MenuItem.STATS);
-    this._filterModel.setFilter(null, FilterType.ALL);
   }
 }
