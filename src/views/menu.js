@@ -1,10 +1,10 @@
 import AbstractView from './abstract';
 import {FilterType} from '../helpers/consts';
 
-const getFilterTemplate = (filter, currentFilterType) => {
+const getFilterTemplate = (filter, currentFilterType, isStatsActive) => {
   const {type, name, count} = filter;
   const url = `#${name.toLowerCase()}`;
-  const activeClassName = type === currentFilterType
+  const activeClassName = (!isStatsActive && type === currentFilterType)
     ? 'main-navigation__item--active' : '';
 
   return `
@@ -16,11 +16,20 @@ const getFilterTemplate = (filter, currentFilterType) => {
   `;
 };
 
-const getMenuTemplate = (filters, currentFilterType) => {
-  const activeDefaultClassName = FilterType.ALL === currentFilterType
+const getMenuTemplate = (filters, currentFilterType, isStatsActive) => {
+  const statsActiveClassName = isStatsActive
+    ? 'main-navigation__additional--active' : '';
+  const activeDefaultClassName = (
+    !isStatsActive &&
+    FilterType.ALL === currentFilterType
+  )
     ? 'main-navigation__item--active' : '';
   const filtersTemplate = filters
-    .map((filter) => getFilterTemplate(filter, currentFilterType))
+    .map((filter) => getFilterTemplate(
+      filter,
+      currentFilterType,
+      isStatsActive,
+    ))
     .join('');
 
   return `
@@ -33,24 +42,33 @@ const getMenuTemplate = (filters, currentFilterType) => {
         >All movies</a>
         ${filtersTemplate}
       </div>
-      <a href="#stats" class="main-navigation__additional" data-stats>Stats</a>
+      <a
+        href="#stats"
+        class="main-navigation__additional ${statsActiveClassName}"
+        data-stats
+      >Stats</a>
     </nav>
   `.trim();
 };
 
 export default class Menu extends AbstractView {
-  constructor(filters, currentFilterType) {
+  constructor(filters, currentFilterType, isStatsActive) {
     super();
 
     this._filters = filters;
     this._currentFilterType = currentFilterType;
+    this._isStatsActive = isStatsActive;
 
     this._filterClickHandler = this._filterClickHandler.bind(this);
     this._statsClickHandler = this._statsClickHandler.bind(this);
   }
 
   _getTemplate() {
-    return getMenuTemplate(this._filters, this._currentFilterType);
+    return getMenuTemplate(
+      this._filters,
+      this._currentFilterType,
+      this._isStatsActive,
+    );
   }
 
   _filterClickHandler(evt) {
@@ -62,6 +80,7 @@ export default class Menu extends AbstractView {
 
   _statsClickHandler(evt) {
     evt.preventDefault();
+    this._callback.statsClickHandler();
   }
 
   addFilterClickHandler(cb) {
@@ -71,7 +90,7 @@ export default class Menu extends AbstractView {
   }
 
   addStatsClickHandler(cb) {
-    this._callback.addStatsClickHandler = cb;
+    this._callback.statsClickHandler = cb;
     this.getElement().querySelector('[data-stats]')
       .addEventListener('click', this._statsClickHandler);
   }

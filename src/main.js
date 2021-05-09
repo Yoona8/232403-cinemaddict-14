@@ -1,7 +1,8 @@
 import UserView from './views/user';
 import MoviesTotalView from './views/movies-total';
+import StatsView from './views/stats';
 import MoviesPresenter from './presenters/movies';
-import FiltersPresenter from './presenters/filters';
+import MenuPresenter from './presenters/menu';
 import MoviesModel from './models/movies';
 import UserModel from './models/user';
 import CommentsModel from './models/comments';
@@ -10,6 +11,7 @@ import {getMovies} from './mocks/movies';
 import {getUser} from './mocks/user';
 import {getComments} from './mocks/comments';
 import {render} from './helpers/render';
+import {MenuItem} from './helpers/consts';
 
 const MOVIES_COUNT = 17;
 const COMMENTS_COUNT = 10;
@@ -29,15 +31,32 @@ commentsModel.setComments(comments);
 render(document.querySelector('.header'), new UserView(userModel.getUser()));
 
 const mainElement = document.querySelector('.main');
-
-new FiltersPresenter(mainElement, filterModel, userModel).init();
-new MoviesPresenter(
+const statsView = new StatsView();
+const moviesPresenter = new MoviesPresenter(
   mainElement,
   moviesModel,
   commentsModel,
   userModel,
   filterModel,
-).init();
+);
+
+const menuClickHandler = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.STATS:
+      statsView.show();
+      moviesPresenter.hide();
+      break;
+    case MenuItem.MOVIES:
+      statsView.hide();
+      moviesPresenter.show();
+      break;
+  }
+};
+
+new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
+moviesPresenter.init();
+statsView.hide();
+render(mainElement, statsView);
 
 render(
   document.querySelector('.footer__statistics'),

@@ -60,6 +60,16 @@ export default class Movies {
     this._renderBoard();
   }
 
+  hide() {
+    this._sortingView.hide();
+    this._moviesView.hide();
+  }
+
+  show() {
+    this._sortingView.show();
+    this._moviesView.show();
+  }
+
   _getMovies(sortingType = this._currentSortingType) {
     const filterType = this._filterModel.getFilter();
     const movies = this._moviesModel.getMovies().slice();
