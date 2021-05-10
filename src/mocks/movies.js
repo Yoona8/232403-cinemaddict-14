@@ -37,7 +37,7 @@ const DESCRIPTIONS = [
   'Frank, an American tourist, is visiting Italy to deal with a recent heartbreak.',
 ];
 
-const GENRES = ['Comedy', 'Romance', 'Sci-Fi', 'Fantasy', 'Drama'];
+const GENRES = ['Comedy', 'Romance', 'Sci-Fi', 'Fantasy', 'Drama', 'Thriller'];
 
 const COMMENTS_MAX_COUNT = 5;
 

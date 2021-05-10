@@ -1,21 +1,23 @@
-import AbstractView from './abstract';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import SmartView from './smart';
 import {formatDuration} from '../helpers/helpers';
+import {filter} from '../helpers/filter';
+import {FilterType} from '../helpers/consts';
+import {getGenreCounts, getTopGenre, getTotalDuration} from '../helpers/stats';
 
-const renderChart = (statisticCtx) => {
+const renderChart = (statisticCtx, labels, data) => {
   const BAR_HEIGHT = 50;
 
-  // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
-  statisticCtx.height = BAR_HEIGHT * 5;
+  statisticCtx.height = BAR_HEIGHT * labels.length;
 
   return new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'],
+      labels: [...labels],
       datasets: [{
-        data: [11, 8, 7, 4, 3],
+        data: [...data],
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -67,18 +69,13 @@ const renderChart = (statisticCtx) => {
   });
 };
 
-const getStatsTemplate = (user, movies) => {
-  const {rank, name, avatar, watched} = user;
-  const watchedCount = watched.size;
-  const totalDuration = movies.reduce((minutes, movie) => {
-    if (watched.has(movie.id)) {
-      return minutes + movie.duration;
-    }
-
-    return minutes;
-  }, 0);
+const getStatsTemplate = (state) => {
+  const {user, watchedMovies, topGenre} = state;
+  const {name, avatar} = user;
+  const rank = user.rank || '';
+  const watchedCount = watchedMovies.length;
+  const totalDuration = getTotalDuration(watchedMovies);
   const {hours, minutes} = formatDuration(totalDuration);
-  const topGenre = movies[0].genres[0];
 
   return `
     <section class="statistic">
@@ -144,23 +141,34 @@ const getStatsTemplate = (user, movies) => {
   `.trim();
 };
 
-export default class Stats extends AbstractView {
-  constructor(user, movies) {
-    super();
+export default class Stats extends SmartView {
+  init(user, movies) {
+    this._watchedMovies = filter[FilterType.WATCHED](movies, user);
+    this._genreCounts = getGenreCounts(this._watchedMovies);
+    this._topGenre = Object.entries(this._genreCounts).length === 0
+      ? '' : getTopGenre(this._genreCounts);
 
-    this._user = user;
-    this._movies = movies;
+    this._updateState({
+      user,
+      watchedMovies: this._watchedMovies,
+      genreCounts: this._genreCounts,
+      topGenre: this._topGenre,
+    });
 
     this._setChart();
   }
 
   _getTemplate() {
-    return getStatsTemplate(this._user, this._movies);
+    return getStatsTemplate(this._state);
   }
 
   _setChart() {
     const ctx = this.getElement().querySelector('.statistic__chart');
+    const labels = Object.keys(this._state.genreCounts);
+    const data = Object.values(this._state.genreCounts);
 
-    renderChart(ctx);
+    renderChart(ctx, labels, data);
   }
+
+  _restoreHandlers() {}
 }

@@ -13,7 +13,7 @@ import {getComments} from './mocks/comments';
 import {render} from './helpers/render';
 import {MenuItem} from './helpers/consts';
 
-const MOVIES_COUNT = 17;
+const MOVIES_COUNT = 5;
 const COMMENTS_COUNT = 10;
 
 const comments = getComments(COMMENTS_COUNT);
@@ -31,7 +31,7 @@ commentsModel.setComments(comments);
 render(document.querySelector('.header'), new UserView(userModel.getUser()));
 
 const mainElement = document.querySelector('.main');
-const statsView = new StatsView(userModel.getUser(), moviesModel.getMovies());
+const statsView = new StatsView();
 const moviesPresenter = new MoviesPresenter(
   mainElement,
   moviesModel,
@@ -43,6 +43,7 @@ const moviesPresenter = new MoviesPresenter(
 const menuClickHandler = (menuItem) => {
   switch (menuItem) {
     case MenuItem.STATS:
+      statsView.init(userModel.getUser(), moviesModel.getMovies());
       statsView.show();
       moviesPresenter.hide();
       break;
@@ -55,6 +56,7 @@ const menuClickHandler = (menuItem) => {
 
 new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
 moviesPresenter.init();
+statsView.init(userModel.getUser(), moviesModel.getMovies());
 statsView.hide();
 render(mainElement, statsView);
 
