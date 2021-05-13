@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {getRandomInteger} from '../helpers/helpers';
 
 const TITLES = [
@@ -67,6 +68,12 @@ const getRandomCommentIds = (comments, id) => {
     .filter((comment) => comment);
 };
 
+const getRandomDate = (min, max) => {
+  const daysGap = getRandomInteger(min, max);
+
+  return dayjs().subtract(daysGap, 'day').format();
+};
+
 const getMovie = (id, comments) => {
   const genres = GENRES.slice(0, getRandomInteger(0, GENRES.length));
   const title = TITLES[getRandomInteger(0, TITLES.length - 1)];
@@ -87,6 +94,7 @@ const getMovie = (id, comments) => {
     genres,
     description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
     comments: new Set(getRandomCommentIds(comments, id)),
+    watchedDate: getRandomDate(0, 400),
   };
 };
 

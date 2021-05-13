@@ -32,11 +32,20 @@ const FilterType = {
   FAVORITES: 3,
 };
 
+const StatsPeriodType = {
+  ALL: 0,
+  TODAY: 1,
+  WEEK: 2,
+  MONTH: 3,
+  YEAR: 4,
+};
+
 export {
   EMOJIS,
   UserAction,
   SortingType,
   UpdateType,
   FilterType,
-  MenuItem
+  MenuItem,
+  StatsPeriodType
 };
