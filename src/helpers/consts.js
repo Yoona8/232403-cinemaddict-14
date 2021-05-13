@@ -20,6 +20,11 @@ const UpdateType = {
   MAJOR: 2,
 };
 
+const MenuItem = {
+  STATS: 0,
+  MOVIES: 1,
+};
+
 const FilterType = {
   ALL: 0,
   WATCHLIST: 1,
@@ -27,4 +32,20 @@ const FilterType = {
   FAVORITES: 3,
 };
 
-export {EMOJIS, UserAction, SortingType, UpdateType, FilterType};
+const StatsPeriodType = {
+  ALL: 0,
+  TODAY: 1,
+  WEEK: 2,
+  MONTH: 3,
+  YEAR: 4,
+};
+
+export {
+  EMOJIS,
+  UserAction,
+  SortingType,
+  UpdateType,
+  FilterType,
+  MenuItem,
+  StatsPeriodType
+};
