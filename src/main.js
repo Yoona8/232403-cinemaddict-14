@@ -7,30 +7,39 @@ import MoviesModel from './models/movies';
 import UserModel from './models/user';
 import CommentsModel from './models/comments';
 import FilterModel from './models/filter';
-import {getMovies} from './mocks/movies';
-import {getUser} from './mocks/user';
+import Api from './api';
 import {getComments} from './mocks/comments';
 import {render} from './helpers/render';
 import {MenuItem} from './helpers/consts';
+import {getUser} from './mocks/user';
 
-const MOVIES_COUNT = 10;
 const COMMENTS_COUNT = 10;
+const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
+const AUTHORIZATION = 'Basic fkajfd894830fkldsa';
 
 const comments = getComments(COMMENTS_COUNT);
-const movies = getMovies(MOVIES_COUNT, comments);
-const user = getUser(movies);
+const api = new Api(END_POINT, AUTHORIZATION);
 const moviesModel = new MoviesModel();
 const userModel = new UserModel();
 const commentsModel = new CommentsModel();
 const filterModel = new FilterModel();
+const mainElement = document.querySelector('.main');
 
-moviesModel.setMovies(movies);
-userModel.setUser(user);
+api.getMovies()
+  .then((movies) => {
+    moviesModel.setMovies(movies);
+    userModel.setUser(getUser(moviesModel.getMovies()));
+    render(document.querySelector('.header'), new UserView(userModel.getUser()));
+    new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
+    moviesPresenter.init();
+    render(
+      document.querySelector('.footer__statistics'),
+      new MoviesTotalView(moviesModel.getMovies().length),
+    );
+  });
+
 commentsModel.setComments(comments);
 
-render(document.querySelector('.header'), new UserView(userModel.getUser()));
-
-const mainElement = document.querySelector('.main');
 const moviesPresenter = new MoviesPresenter(
   mainElement,
   moviesModel,
@@ -57,12 +66,4 @@ const menuClickHandler = (menuItem) => {
       break;
   }
 };
-
-new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
-moviesPresenter.init();
-
-render(
-  document.querySelector('.footer__statistics'),
-  new MoviesTotalView(movies.length),
-);
 

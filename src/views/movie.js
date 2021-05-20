@@ -42,7 +42,7 @@ const getMovieTemplate = (movie, user) => {
         <span class="film-card__genre">${genreOutput}</span>
       </p>
       <img
-        src="./images/posters/${poster}"
+        src="./${poster}"
         alt="${title}"
         class="film-card__poster"
         data-details-open

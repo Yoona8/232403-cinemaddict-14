@@ -161,7 +161,7 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
             <div class="film-details__poster">
               <img
                 class="film-details__poster-img"
-                src="./images/posters/${poster}"
+                src="./${poster}"
                 alt="${title}"
               >
 

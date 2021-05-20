@@ -1,6 +1,8 @@
+import MoviesModel from './models/movies';
+
 const Method = {
   GET: 'GET',
-  POST: 'POST',
+  PUT: 'PUT',
 };
 
 const StatusClass = {
@@ -15,10 +17,20 @@ export default class Api {
 
   getMovies() {
     return this._load({url: 'movies'})
-      .then(Api._toJSON);
+      .then(Api._toJSON)
+      .then((movies) => movies.map(MoviesModel.adaptToClient));
   }
 
-  updateMovie() {}
+  updateMovie(movie) {
+    return this._load({
+      url: `movies/${movie.id}`,
+      method: Method.PUT,
+      body: JSON.stringify(MoviesModel.adaptToServer(movie)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api._toJSON)
+      .then(MoviesModel.adaptToClient);
+  }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append('Authorization', this._authorization);
