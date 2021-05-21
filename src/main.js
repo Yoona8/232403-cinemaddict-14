@@ -10,7 +10,7 @@ import FilterModel from './models/filter';
 import Api from './api';
 import {getComments} from './mocks/comments';
 import {render} from './helpers/render';
-import {MenuItem} from './helpers/consts';
+import {MenuItem, UpdateType} from './helpers/consts';
 import {getUser} from './mocks/user';
 
 const COMMENTS_COUNT = 10;
@@ -27,7 +27,8 @@ const mainElement = document.querySelector('.main');
 
 api.getMovies()
   .then((movies) => {
-    moviesModel.setMovies(movies);
+    moviesModel.setMovies(UpdateType.INIT, movies);
+
     userModel.setUser(getUser(moviesModel.getMovies()));
     render(document.querySelector('.header'), new UserView(userModel.getUser()));
     new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
@@ -36,6 +37,9 @@ api.getMovies()
       document.querySelector('.footer__statistics'),
       new MoviesTotalView(moviesModel.getMovies().length),
     );
+  })
+  .catch(() => {
+    moviesModel.setMovies(UpdateType.INIT, []);
   });
 
 commentsModel.setComments(comments);

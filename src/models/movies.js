@@ -7,8 +7,9 @@ export default class Movies extends Subject {
     this._api = api;
   }
 
-  setMovies(movies) {
+  setMovies(updateType, movies) {
     this._movies = movies.slice();
+    this._notify(updateType, movies);
   }
 
   getMovies() {
