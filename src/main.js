@@ -31,8 +31,7 @@ api.getMovies()
 
     userModel.setUser(getUser(moviesModel.getMovies()));
     render(document.querySelector('.header'), new UserView(userModel.getUser()));
-    new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
-    moviesPresenter.init();
+
     render(
       document.querySelector('.footer__statistics'),
       new MoviesTotalView(moviesModel.getMovies().length),
@@ -70,4 +69,7 @@ const menuClickHandler = (menuItem) => {
       break;
   }
 };
+
+new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
+moviesPresenter.init();
 

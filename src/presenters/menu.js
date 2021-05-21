@@ -43,7 +43,11 @@ export default class Menu {
   }
 
   _getFilters() {
-    const {favorites, watched, watchlist} = this._userModel.getUser();
+    const {
+      favorites = new Set(),
+      watched = new Set(),
+      watchlist = new Set(),
+    } = this._userModel.getUser();
 
     return [{
       type: FilterType.WATCHLIST,

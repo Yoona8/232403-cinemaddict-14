@@ -6,6 +6,7 @@ import ShowMoreButtonView from '../views/show-more-button';
 import TopRatedMoviesView from '../views/top-rated-movies';
 import AllMoviesView from '../views/all-movies';
 import CommentedMoviesView from '../views/commented-movies';
+import LoadingView from '../views/loading';
 import {render, RenderPosition, replace} from '../helpers/render';
 import {
   FilterType,
@@ -36,12 +37,14 @@ export default class Movies {
 
     this._renderedMoviesCount = MoviesCount.PER_STEP;
     this._currentSortingType = SortingType.DEFAULT;
+    this._isLoading = true;
 
     this._moviePresenters = [];
     this._currentDetailsPresenter = null;
 
     this._moviesView = new MoviesView();
     this._allMoviesView = new AllMoviesView();
+    this._loadingView = new LoadingView();
     this._sortingView = null;
     this._showMoreButtonView = null;
 
@@ -177,13 +180,18 @@ export default class Movies {
     this._renderAllMovies();
     this._renderTopRated();
     this._renderCommented();
-
-    render(this._container, this._moviesView);
   }
 
   _renderBoard() {
+    render(this._container, this._moviesView);
+
+    if (this._isLoading) {
+      render(this._moviesView, this._loadingView);
+      return;
+    }
+
     if (this._getMovies().length === 0) {
-      render(this._container, new NoMoviesView());
+      render(this._moviesView, new NoMoviesView());
     } else {
       this._renderSorting();
       this._renderMovieList();
@@ -223,6 +231,11 @@ export default class Movies {
         this._renderSorting();
         this._clearAllMovies();
         this._renderAllMovies();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        this._loadingView.removeElement();
+        this._renderBoard();
         break;
     }
   }
