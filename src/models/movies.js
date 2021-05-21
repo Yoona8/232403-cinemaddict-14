@@ -65,8 +65,6 @@ export default class Movies extends Subject {
     delete adaptedMovie.runtime;
     delete adaptedMovie.genre;
 
-    Movies.adaptToServer(adaptedMovie);
-
     return adaptedMovie;
   }
 

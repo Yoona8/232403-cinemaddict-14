@@ -121,7 +121,6 @@ const getDetailsModalTemplate = (state, commentMessages) => {
     country,
     genres,
     description,
-    comments,
     isWatched,
     isFavorite,
     isWatchlist,
@@ -136,12 +135,9 @@ const getDetailsModalTemplate = (state, commentMessages) => {
   const watchedChecked = isWatched ? 'checked' : '';
   const toWatchChecked = isWatchlist ? 'checked' : '';
   const favoriteChecked = isFavorite ? 'checked' : '';
-  const commentsCount = comments.size;
+  const commentsCount = commentMessages.length;
   const sanitizedMessage = he.encode(commentTextS);
-  const movieCommentMessages = commentMessages.filter((message) => {
-    return comments.has(message.id);
-  });
-  const commentsTemplate = getCommentsTemplate(movieCommentMessages);
+  const commentsTemplate = getCommentsTemplate(commentMessages);
   const emojiImageTemplate = commentEmojiS
     ? getEmojiImageTemplate(commentEmojiS) : '';
   const emojisTemplate = EMOJIS
@@ -301,7 +297,7 @@ const getDetailsModalTemplate = (state, commentMessages) => {
 };
 
 export default class DetailsModal extends SmartView {
-  constructor(movie, comments = new Set()) {
+  constructor(movie, comments) {
     super();
 
     this._comments = comments;

@@ -8,20 +8,17 @@ import UserModel from './models/user';
 import CommentsModel from './models/comments';
 import FilterModel from './models/filter';
 import Api from './api';
-import {getComments} from './mocks/comments';
 import {render} from './helpers/render';
 import {MenuItem, UpdateType} from './helpers/consts';
 import {getUser} from './mocks/user';
 
-const COMMENTS_COUNT = 10;
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 const AUTHORIZATION = 'Basic fkajfd894830fkldsa';
 
-const comments = getComments(COMMENTS_COUNT);
 const api = new Api(END_POINT, AUTHORIZATION);
 const moviesModel = new MoviesModel(api);
 const userModel = new UserModel();
-const commentsModel = new CommentsModel();
+const commentsModel = new CommentsModel(api);
 const filterModel = new FilterModel();
 const mainElement = document.querySelector('.main');
 
@@ -53,8 +50,6 @@ api.getMovies()
     renderUser();
     renderMenu();
   });
-
-commentsModel.setComments(comments);
 
 const moviesPresenter = new MoviesPresenter(
   mainElement,

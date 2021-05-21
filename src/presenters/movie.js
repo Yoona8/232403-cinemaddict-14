@@ -68,6 +68,8 @@ export default class Movie {
 
   _openDetails() {
     this._callback.detailsOpenHandler(this._movie.id);
+    this._commentsModel.setComments(UpdateType.INIT, this._movie.id);
+    this._commentsModel.addObserver(this._modelChangeHandler);
 
     this._detailsModalView = new DetailsModalView(
       this._movie,
@@ -83,8 +85,6 @@ export default class Movie {
     this._detailsModalView
       .addCommentDeleteClickHandler(this._commentDeleteHandler);
     this._detailsModalView.addCommentSubmitHandler(this._commentSubmitHandler);
-
-    this._commentsModel.addObserver(this._modelChangeHandler);
 
     document.addEventListener('keydown', this._detailsEscKeyDownHandler);
     document.body.classList.add(BODY_NO_SCROLL_CLASS_NAME);
@@ -164,7 +164,7 @@ export default class Movie {
       Object.assign({}, this._movie, {comments}),
     );
 
-    this._commentsModel.addComment(UpdateType.PATCH, comment);
+    this._commentsModel.addComment(UpdateType.PATCH, comment, this._movie.id);
   }
 
   addDetailsOpenHandler(cb) {

@@ -1,23 +1,35 @@
 import Subject from '../helpers/subject';
 
 export default class Comments extends Subject {
-  constructor() {
+  constructor(api) {
     super();
 
+    this._api = api;
     this._comments = [];
   }
 
-  setComments(comments) {
-    this._comments = comments.slice();
+  setComments(updateType, movieId) {
+    this._api.getComments(movieId)
+      .then((comments) => {
+        this._comments = comments;
+        this._notify(updateType, this._comments);
+      })
+      .catch(() => {
+        this._comments = [];
+        this._notify(updateType, this._comments);
+      });
   }
 
   getComments() {
     return this._comments;
   }
 
-  addComment(updateType, newComment) {
-    this._comments = [...this._comments, newComment];
-    this._notify(updateType, newComment);
+  addComment(updateType, newComment, movieId) {
+    this._api.addComment(newComment, movieId)
+      .then((comments) => {
+        this._comments = comments.slice();
+        this._notify(updateType, comments);
+      });
   }
 
   deleteComment(updateType, commentId) {
@@ -33,6 +45,31 @@ export default class Comments extends Subject {
       ...this._comments.slice(index + 1),
     ];
 
-    this._notify(updateType, this._comments);
+    this._api.deleteComment(commentId)
+      .then(() => this._notify(updateType, this._comments));
+  }
+
+  static adaptToClient(comment) {
+    const adaptedComment = Object.assign({}, comment, {
+      message: comment.comment,
+      emoji: comment.emotion,
+    });
+
+    delete adaptedComment.comment;
+    delete adaptedComment.emotion;
+
+    return adaptedComment;
+  }
+
+  static adaptToServer(comment) {
+    const adaptedComment = Object.assign({}, comment, {
+      comment: comment.message,
+      emotion: comment.emoji,
+    });
+
+    delete adaptedComment.message;
+    delete adaptedComment.emoji;
+
+    return adaptedComment;
   }
 }
