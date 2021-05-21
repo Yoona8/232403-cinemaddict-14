@@ -3,9 +3,8 @@ import {getYear, formatDuration, trimText} from '../helpers/helpers';
 
 const DESCRIPTION_LIMIT = 140;
 
-const getMovieTemplate = (movie, user) => {
+const getMovieTemplate = (movie) => {
   const {
-    id,
     title,
     rating,
     releaseDate,
@@ -14,9 +13,10 @@ const getMovieTemplate = (movie, user) => {
     poster,
     description,
     comments,
+    isFavorite,
+    isWatched,
+    isWatchlist,
   } = movie;
-
-  const {watched, watchlist, favorites} = user;
 
   const year = getYear(releaseDate);
   const {hours, minutes} = formatDuration(duration);
@@ -28,9 +28,9 @@ const getMovieTemplate = (movie, user) => {
     ? `${commentsCount} comment`
     : `${commentsCount} comments`;
   const activeControlClassName = 'film-card__controls-item--active';
-  const watchedClassName = watched.has(id) ? activeControlClassName : '';
-  const toWatchClassName = watchlist.has(id) ? activeControlClassName : '';
-  const favoriteClassName = favorites.has(id) ? activeControlClassName : '';
+  const watchedClassName = isWatched ? activeControlClassName : '';
+  const toWatchClassName = isWatchlist ? activeControlClassName : '';
+  const favoriteClassName = isFavorite ? activeControlClassName : '';
 
   return `
     <article class="film-card">
@@ -42,7 +42,7 @@ const getMovieTemplate = (movie, user) => {
         <span class="film-card__genre">${genreOutput}</span>
       </p>
       <img
-        src="./images/posters/${poster}"
+        src="./${poster}"
         alt="${title}"
         class="film-card__poster"
         data-details-open
@@ -83,11 +83,10 @@ const getMovieTemplate = (movie, user) => {
 };
 
 export default class Movie extends AbstractView {
-  constructor(movie, user = {}) {
+  constructor(movie) {
     super();
 
     this._movie = movie;
-    this._user = user;
 
     this._detailsOpenClickHandler = this._detailsOpenClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
@@ -96,7 +95,7 @@ export default class Movie extends AbstractView {
   }
 
   _getTemplate() {
-    return getMovieTemplate(this._movie, this._user);
+    return getMovieTemplate(this._movie);
   }
 
   _detailsOpenClickHandler(evt) {

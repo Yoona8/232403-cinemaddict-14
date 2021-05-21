@@ -18,6 +18,7 @@ const UpdateType = {
   PATCH: 0,
   MINOR: 1,
   MAJOR: 2,
+  INIT: 3,
 };
 
 const MenuItem = {

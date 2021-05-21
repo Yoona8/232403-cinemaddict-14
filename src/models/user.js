@@ -4,7 +4,7 @@ export default class User extends Subject {
   constructor() {
     super();
 
-    this._user = null;
+    this._user = {};
   }
 
   setUser(user) {

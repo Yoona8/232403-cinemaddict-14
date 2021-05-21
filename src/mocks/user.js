@@ -1,13 +1,3 @@
-import {getRandomInteger} from '../helpers/helpers';
-
-const getRandomMovieIds = (movies) => {
-  const length = getRandomInteger(0, movies.length);
-
-  return new Array(length).fill('').map(() => {
-    return movies[getRandomInteger(0, movies.length - 1)].id;
-  });
-};
-
 const getRank = (watchedCount) => {
   if (watchedCount === 0) {
     return null;
@@ -21,7 +11,21 @@ const getRank = (watchedCount) => {
 };
 
 const getUser = (movies) => {
-  const watched = new Set(getRandomMovieIds(movies));
+  const watched = new Set(
+    movies
+      .filter((movie) => movie.isWatched)
+      .map((movie) => movie.id),
+  );
+  const watchlist = new Set(
+    movies
+      .filter((movie) => movie.isWatchlist)
+      .map((movie) => movie.id),
+  );
+  const favorites = new Set(
+    movies
+      .filter((movie) => movie.isFavorite)
+      .map((movie) => movie.id),
+  );
 
   return {
     id: '0',
@@ -29,8 +33,8 @@ const getUser = (movies) => {
     avatar: 'bitmap@2x.png',
     rank: getRank(watched.size),
     watched,
-    watchlist: new Set(getRandomMovieIds(movies)),
-    favorites: new Set(getRandomMovieIds(movies)),
+    watchlist,
+    favorites,
   };
 };
 

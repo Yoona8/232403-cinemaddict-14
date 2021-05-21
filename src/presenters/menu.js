@@ -1,5 +1,5 @@
 import MenuView from '../views/menu';
-import {render, replace} from '../helpers/render';
+import {render, RenderPosition, replace} from '../helpers/render';
 import {FilterType, MenuItem, UpdateType} from '../helpers/consts';
 
 export default class Menu {
@@ -33,7 +33,7 @@ export default class Menu {
     this._menuView.addStatsClickHandler(this._statsClickHandler);
 
     if (prevMenuView === null) {
-      render(this._container, this._menuView);
+      render(this._container, this._menuView, RenderPosition.AFTER_BEGIN);
       return;
     }
 
@@ -43,7 +43,11 @@ export default class Menu {
   }
 
   _getFilters() {
-    const {favorites, watched, watchlist} = this._userModel.getUser();
+    const {
+      favorites = new Set(),
+      watched = new Set(),
+      watchlist = new Set(),
+    } = this._userModel.getUser();
 
     return [{
       type: FilterType.WATCHLIST,
