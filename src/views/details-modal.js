@@ -106,9 +106,8 @@ const getEmojiImageTemplate = (emoji) => {
   `.trim();
 };
 
-const getDetailsModalTemplate = (state, user, commentMessages) => {
+const getDetailsModalTemplate = (state, commentMessages) => {
   const {
-    id,
     poster,
     title,
     originalTitle,
@@ -123,19 +122,20 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
     genres,
     description,
     comments,
+    isWatched,
+    isFavorite,
+    isWatchlist,
     commentEmojiS,
     commentTextS,
   } = state;
-
-  const {watched, watchlist, favorites} = user;
 
   const formattedReleaseDate = formatReleaseDate(releaseDate);
   const {hours, minutes} = formatDuration(duration);
   const durationOutput = `${hours === 0 ? '' : `${hours}h`} ${minutes}m`.trim();
   const genresTemplate = genres.length === 0 ? '' : getGenresTemplate(genres);
-  const watchedChecked = watched.has(id) ? 'checked' : '';
-  const toWatchChecked = watchlist.has(id) ? 'checked' : '';
-  const favoriteChecked = favorites.has(id) ? 'checked' : '';
+  const watchedChecked = isWatched ? 'checked' : '';
+  const toWatchChecked = isWatchlist ? 'checked' : '';
+  const favoriteChecked = isFavorite ? 'checked' : '';
   const commentsCount = comments.size;
   const sanitizedMessage = he.encode(commentTextS);
   const movieCommentMessages = commentMessages.filter((message) => {
@@ -301,10 +301,9 @@ const getDetailsModalTemplate = (state, user, commentMessages) => {
 };
 
 export default class DetailsModal extends SmartView {
-  constructor(movie, user = {}, comments = new Set()) {
+  constructor(movie, comments = new Set()) {
     super();
 
-    this._user = user;
     this._comments = comments;
     this._state = DetailsModal.parseDataToState(movie);
 
@@ -322,7 +321,7 @@ export default class DetailsModal extends SmartView {
   }
 
   _getTemplate() {
-    return getDetailsModalTemplate(this._state, this._user, this._comments);
+    return getDetailsModalTemplate(this._state, this._comments);
   }
 
   _restoreHandlers() {

@@ -36,7 +36,7 @@ export default class Movie {
 
     const prevMovieView = this._movieView;
 
-    this._movieView = new MovieView(this._movie, this._user);
+    this._movieView = new MovieView(this._movie);
     this._movieView.addDetailsOpenClickHandler(() => this._openDetails());
     this._movieView.addFavoriteClickHandler(this._favoriteToggleHandler);
     this._movieView.addWatchedClickHandler(this._watchedToggleHandler);
@@ -71,7 +71,6 @@ export default class Movie {
 
     this._detailsModalView = new DetailsModalView(
       this._movie,
-      this._user,
       this._commentsModel.getComments(),
     );
 
@@ -115,7 +114,9 @@ export default class Movie {
     this._changeMovie(
       UserAction.FAVORITE,
       UpdateType.PATCH,
-      Object.assign({}, this._movie),
+      Object.assign({}, this._movie, {
+        isFavorite: !this._movie.isFavorite,
+      }),
     );
   }
 
@@ -123,7 +124,9 @@ export default class Movie {
     this._changeMovie(
       UserAction.WATCHED,
       UpdateType.PATCH,
-      Object.assign({}, this._movie),
+      Object.assign({}, this._movie, {
+        isWatched: !this._movie.isWatched,
+      }),
     );
   }
 
@@ -131,7 +134,9 @@ export default class Movie {
     this._changeMovie(
       UserAction.WATCHLIST,
       UpdateType.PATCH,
-      Object.assign({}, this._movie),
+      Object.assign({}, this._movie, {
+        isWatchlist: !this._movie.isWatchlist,
+      }),
     );
   }
 

@@ -1,9 +1,10 @@
 import Subject from '../helpers/subject';
 
 export default class Movies extends Subject {
-  constructor() {
+  constructor(api) {
     super();
     this._movies = [];
+    this._api = api;
   }
 
   setMovies(movies) {
@@ -28,7 +29,8 @@ export default class Movies extends Subject {
       ...this._movies.slice(index + 1),
     ];
 
-    this._notify(updateType, updatedMovie);
+    this._api.updateMovie(updatedMovie)
+      .then((movie) => this._notify(updateType, movie));
   }
 
   static adaptToClient(movie) {

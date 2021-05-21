@@ -19,7 +19,7 @@ const AUTHORIZATION = 'Basic fkajfd894830fkldsa';
 
 const comments = getComments(COMMENTS_COUNT);
 const api = new Api(END_POINT, AUTHORIZATION);
-const moviesModel = new MoviesModel();
+const moviesModel = new MoviesModel(api);
 const userModel = new UserModel();
 const commentsModel = new CommentsModel();
 const filterModel = new FilterModel();
