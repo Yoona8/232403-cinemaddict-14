@@ -103,7 +103,7 @@ export default class Movies {
       return;
     }
 
-    render(this._container, this._sortingView);
+    render(this._moviesView, this._sortingView, RenderPosition.BEFORE_BEGIN);
   }
 
   _renderMovie(container, movie) {

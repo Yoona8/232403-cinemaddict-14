@@ -25,20 +25,33 @@ const commentsModel = new CommentsModel();
 const filterModel = new FilterModel();
 const mainElement = document.querySelector('.main');
 
+const renderTotalCount = () => {
+  render(
+    document.querySelector('.footer__statistics'),
+    new MoviesTotalView(moviesModel.getMovies().length),
+  );
+};
+const renderUser = () => {
+  render(document.querySelector('.header'), new UserView(userModel.getUser()));
+};
+const renderMenu = () => {
+  new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler)
+    .init();
+};
+
 api.getMovies()
   .then((movies) => {
     moviesModel.setMovies(UpdateType.INIT, movies);
-
     userModel.setUser(getUser(moviesModel.getMovies()));
-    render(document.querySelector('.header'), new UserView(userModel.getUser()));
-
-    render(
-      document.querySelector('.footer__statistics'),
-      new MoviesTotalView(moviesModel.getMovies().length),
-    );
+    renderTotalCount();
+    renderUser();
+    renderMenu();
   })
   .catch(() => {
     moviesModel.setMovies(UpdateType.INIT, []);
+    renderTotalCount();
+    renderUser();
+    renderMenu();
   });
 
 commentsModel.setComments(comments);
@@ -70,6 +83,5 @@ const menuClickHandler = (menuItem) => {
   }
 };
 
-new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler).init();
 moviesPresenter.init();
 
