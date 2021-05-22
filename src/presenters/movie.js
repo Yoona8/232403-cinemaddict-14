@@ -152,7 +152,9 @@ export default class Movie {
           Object.assign({}, this._movie, {comments}),
         );
       })
-      .catch(() => this._detailsModalView.updateDeletingComment(false));
+      .catch(() => {
+        this._detailsModalView.updateDeletingComment(false, true);
+      });
   }
 
   _commentSubmitHandler(comment) {
@@ -168,7 +170,7 @@ export default class Movie {
         );
       })
       .catch(() => {
-        this._detailsModalView.updateFormState(false);
+        this._detailsModalView.updateFormState(false, true);
       });
   }
 
