@@ -302,6 +302,7 @@ export default class DetailsModal extends SmartView {
 
     this._comments = comments;
     this._state = DetailsModal.parseDataToState(movie);
+    this._commentFieldElement = null;
 
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._watchedChangeHandler = this._watchedChangeHandler.bind(this);
@@ -340,7 +341,26 @@ export default class DetailsModal extends SmartView {
     this._comments = comments;
     this._updateState({
       comments: new Set([...movie.comments]),
+      commentEmojiS: null,
+      commentTextS: '',
     });
+  }
+
+  updateDeletingComment(isDeleting = true) {
+    if (isDeleting) {
+      this._state.deleteElementS.disabled = true;
+      this._state.deleteElementS.textContent = 'Deleting...';
+    } else {
+      this._state.deleteElementS.disabled = false;
+      this._state.deleteElementS.textContent = 'Delete';
+      this._updateState({
+        deleteElementS: null,
+      }, false);
+    }
+  }
+
+  updateFormState(isDisabled = true) {
+    this._commentFieldElement.disabled = isDisabled;
   }
 
   _closeClickHandler(evt) {
@@ -372,17 +392,21 @@ export default class DetailsModal extends SmartView {
 
     if (commentId) {
       evt.preventDefault();
+      this._updateState({
+        deleteElementS: evt.target,
+      }, false);
+      this.updateDeletingComment(true);
       this._callback.commentDeleteClickHandler(commentId);
     }
   }
 
   _commentSubmitHandler(evt) {
-    if (!this._state.commentEmojiS) {
-      return;
-    }
-
     if (checkCtrlEnterKeyDown(evt)) {
       evt.preventDefault();
+
+      if (!this._state.commentEmojiS) {
+        return;
+      }
 
       const comment = {
         movieId: this._state.id,
@@ -392,10 +416,7 @@ export default class DetailsModal extends SmartView {
         date: new Date(),
       };
 
-      this._updateState({
-        commentEmojiS: null,
-        commentTextS: '',
-      }, false);
+      this.updateFormState();
       this._callback.commentSubmitHandler(comment);
     }
   }
@@ -446,7 +467,9 @@ export default class DetailsModal extends SmartView {
 
   addCommentSubmitHandler(cb) {
     this._callback.commentSubmitHandler = cb;
-    this.getElement().querySelector('[data-comment-field]')
+    this._commentFieldElement = this.getElement()
+      .querySelector('[data-comment-field]');
+    this._commentFieldElement
       .addEventListener('keydown', this._commentSubmitHandler);
   }
 
@@ -454,6 +477,7 @@ export default class DetailsModal extends SmartView {
     return Object.assign({}, movie, {
       commentEmojiS: null,
       commentTextS: '',
+      deleteElementS: null,
     });
   }
 
@@ -462,6 +486,9 @@ export default class DetailsModal extends SmartView {
 
     delete data.commentEmojiS;
     delete data.commentTextS;
+    delete data.isCommentFormDisabledS;
+    delete data.deleteElementS;
+
     return data;
   }
 }

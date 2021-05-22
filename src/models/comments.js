@@ -25,7 +25,7 @@ export default class Comments extends Subject {
   }
 
   addComment(updateType, newComment, movieId) {
-    this._api.addComment(newComment, movieId)
+    return this._api.addComment(newComment, movieId)
       .then((comments) => {
         this._comments = comments.slice();
         this._notify(updateType, comments);
@@ -40,13 +40,15 @@ export default class Comments extends Subject {
       throw new Error('Can\'t delete the not existing comment');
     }
 
-    this._comments = [
-      ...this._comments.slice(0, index),
-      ...this._comments.slice(index + 1),
-    ];
+    return this._api.deleteComment(commentId)
+      .then(() => {
+        this._comments = [
+          ...this._comments.slice(0, index),
+          ...this._comments.slice(index + 1),
+        ];
 
-    this._api.deleteComment(commentId)
-      .then(() => this._notify(updateType, this._comments));
+        this._notify(updateType, this._comments);
+      });
   }
 
   static adaptToClient(comment) {

@@ -144,27 +144,32 @@ export default class Movie {
     const comments = new Set([...this._movie.comments]);
     comments.delete(commentId);
 
-    this._changeMovie(
-      UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
-      Object.assign({}, this._movie, {comments}),
-    );
-
-    this._commentsModel.deleteComment(UpdateType.PATCH, commentId);
+    this._commentsModel.deleteComment(UpdateType.PATCH, commentId)
+      .then(() => {
+        this._changeMovie(
+          UserAction.DELETE_COMMENT,
+          UpdateType.PATCH,
+          Object.assign({}, this._movie, {comments}),
+        );
+      })
+      .catch(() => this._detailsModalView.updateDeletingComment(false));
   }
 
   _commentSubmitHandler(comment) {
     comment.id = String(this._commentsModel.getComments().length);
-
     const comments = new Set([...this._movie.comments, comment.id]);
 
-    this._changeMovie(
-      UserAction.ADD_COMMENT,
-      UpdateType.PATCH,
-      Object.assign({}, this._movie, {comments}),
-    );
-
-    this._commentsModel.addComment(UpdateType.PATCH, comment, this._movie.id);
+    this._commentsModel.addComment(UpdateType.PATCH, comment, this._movie.id)
+      .then(() => {
+        this._changeMovie(
+          UserAction.ADD_COMMENT,
+          UpdateType.PATCH,
+          Object.assign({}, this._movie, {comments}),
+        );
+      })
+      .catch(() => {
+        this._detailsModalView.updateFormState(false);
+      });
   }
 
   addDetailsOpenHandler(cb) {
