@@ -7,6 +7,8 @@ import {
 } from '../helpers/helpers';
 import {EMOJIS} from '../helpers/consts';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 const getGenresTemplate = (genres) => {
   const label = genres.length === 1 ? 'Genre' : 'Genres';
   const genresTemplate = genres.map((genre) => {
@@ -36,7 +38,7 @@ const getCommentTemplate = (comment) => {
   const sanitizedMessage = he.encode(message);
 
   return `
-    <li class="film-details__comment">
+    <li class="film-details__comment" data-comment>
       <span class="film-details__comment-emoji">
         <img
           src="./images/emoji/${emoji}.png"
@@ -271,7 +273,7 @@ const getDetailsModalTemplate = (state, commentMessages) => {
 
             ${commentsTemplate}
 
-            <div class="film-details__new-comment">
+            <div class="film-details__new-comment" data-comment-new>
               <div class="film-details__add-emoji-label">
                 ${emojiImageTemplate}
               </div>
@@ -302,6 +304,10 @@ export default class DetailsModal extends SmartView {
 
     this._comments = comments;
     this._state = DetailsModal.parseDataToState(movie);
+    this._commentFieldElement = null;
+
+    this._resetDeletingComment = this._resetDeletingComment.bind(this);
+    this._resetForm = this._resetForm.bind(this);
 
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._watchedChangeHandler = this._watchedChangeHandler.bind(this);
@@ -340,7 +346,58 @@ export default class DetailsModal extends SmartView {
     this._comments = comments;
     this._updateState({
       comments: new Set([...movie.comments]),
+      commentEmojiS: null,
+      commentTextS: '',
     });
+  }
+
+  updateDeletingComment(isDeleting = true, isError = false) {
+    this._updateState({
+      isDeletingS: isDeleting,
+    }, false);
+
+    if (isError) {
+      this._shakeElement(
+        this._state.deleteElementS.closest('[data-comment]'),
+        this._resetDeletingComment,
+      );
+    } else {
+      this._resetDeletingComment();
+    }
+  }
+
+  _resetDeletingComment() {
+    this._state.deleteElementS.disabled = this._state.isDeletingS;
+    this._state.deleteElementS.textContent = this._state.isDeletingS
+      ? 'Deleting...' : 'Delete';
+  }
+
+  updateFormState(isDisabled = true, isError = false) {
+    this._updateState({
+      isSubmittingS: isDisabled,
+    }, false);
+
+    if (isError) {
+      this._shakeElement(
+        this._commentFieldElement.closest('[data-comment-new]'),
+        this._resetForm,
+      );
+    } else {
+      this._resetForm();
+    }
+  }
+
+  _resetForm() {
+    this._commentFieldElement.disabled = this._state.isSubmittingS;
+  }
+
+  _shakeElement(element, cb) {
+    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      element.style.animation = '';
+      cb();
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _closeClickHandler(evt) {
@@ -372,17 +429,24 @@ export default class DetailsModal extends SmartView {
 
     if (commentId) {
       evt.preventDefault();
+
+      this._updateState({
+        deleteElementS: evt.target,
+      }, false);
+
+      this.updateDeletingComment(true);
       this._callback.commentDeleteClickHandler(commentId);
     }
   }
 
   _commentSubmitHandler(evt) {
-    if (!this._state.commentEmojiS) {
-      return;
-    }
-
     if (checkCtrlEnterKeyDown(evt)) {
       evt.preventDefault();
+
+      if (!this._state.commentEmojiS || this._state.commentTextS === '') {
+        this.updateFormState(false, true);
+        return;
+      }
 
       const comment = {
         movieId: this._state.id,
@@ -392,10 +456,7 @@ export default class DetailsModal extends SmartView {
         date: new Date(),
       };
 
-      this._updateState({
-        commentEmojiS: null,
-        commentTextS: '',
-      }, false);
+      this.updateFormState();
       this._callback.commentSubmitHandler(comment);
     }
   }
@@ -446,7 +507,9 @@ export default class DetailsModal extends SmartView {
 
   addCommentSubmitHandler(cb) {
     this._callback.commentSubmitHandler = cb;
-    this.getElement().querySelector('[data-comment-field]')
+    this._commentFieldElement = this.getElement()
+      .querySelector('[data-comment-field]');
+    this._commentFieldElement
       .addEventListener('keydown', this._commentSubmitHandler);
   }
 
@@ -454,6 +517,9 @@ export default class DetailsModal extends SmartView {
     return Object.assign({}, movie, {
       commentEmojiS: null,
       commentTextS: '',
+      deleteElementS: null,
+      isDeletingS: false,
+      isSubmittingS: false,
     });
   }
 
@@ -462,6 +528,10 @@ export default class DetailsModal extends SmartView {
 
     delete data.commentEmojiS;
     delete data.commentTextS;
+    delete data.isSubmittingS;
+    delete data.isDeletingS;
+    delete data.deleteElementS;
+
     return data;
   }
 }
