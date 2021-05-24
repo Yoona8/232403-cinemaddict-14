@@ -7,7 +7,7 @@ import MoviesModel from './models/movies';
 import UserModel from './models/user';
 import CommentsModel from './models/comments';
 import FilterModel from './models/filter';
-import Api from './api';
+import Api from './api/api';
 import {render} from './helpers/render';
 import {MenuItem, UpdateType} from './helpers/consts';
 import {getUser} from './mocks/user';
