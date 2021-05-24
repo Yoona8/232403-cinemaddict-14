@@ -80,3 +80,7 @@ const menuClickHandler = (menuItem) => {
 
 moviesPresenter.init();
 
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
+
