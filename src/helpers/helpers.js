@@ -3,13 +3,6 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
-const getRandomInteger = (a = 0, b = 1) => {
-  const min = Math.ceil(Math.min(a, b));
-  const max = Math.floor(Math.max(a, b));
-
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
 const getYear = (date) => {
   return dayjs(date).year();
 };
@@ -79,8 +72,11 @@ const sortMoviesByCommentsCountDown = (movieA, movieB) => {
   return movieB.comments.size - movieA.comments.size;
 };
 
+const isOnline = () => {
+  return window.navigator.onLine;
+};
+
 export {
-  getRandomInteger,
   getYear,
   formatDuration,
   formatReleaseDate,
@@ -91,5 +87,6 @@ export {
   toggleItemInSet,
   sortMoviesByDateDown,
   sortMoviesByRatingDown,
-  sortMoviesByCommentsCountDown
+  sortMoviesByCommentsCountDown,
+  isOnline
 };

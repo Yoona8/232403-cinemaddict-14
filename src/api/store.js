@@ -15,4 +15,13 @@ export default class Store {
   setItems(items) {
     this._storage.setItem(this._key, JSON.stringify(items));
   }
+
+  setItem(key, value) {
+    const store = this.getItems();
+
+    this._storage.setItem(
+      this._key,
+      JSON.stringify(Object.assign({}, store, {[key]: value})),
+    );
+  }
 }

@@ -8,17 +8,24 @@ import UserModel from './models/user';
 import CommentsModel from './models/comments';
 import FilterModel from './models/filter';
 import Api from './api/api';
+import Store from './api/store';
+import Provider from './api/provider';
 import {render} from './helpers/render';
 import {MenuItem, UpdateType} from './helpers/consts';
 import {getUser} from './mocks/user';
 
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 const AUTHORIZATION = 'Basic fkajfd894830fkldsa';
+const STORE_PREFIX = 'movies';
+const STORE_VER = 'v1';
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
-const moviesModel = new MoviesModel(api);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiProvider = new Provider(api, store);
+const moviesModel = new MoviesModel(apiProvider);
 const userModel = new UserModel();
-const commentsModel = new CommentsModel(api);
+const commentsModel = new CommentsModel(apiProvider);
 const filterModel = new FilterModel();
 const mainElement = document.querySelector('.main');
 
@@ -36,7 +43,7 @@ const renderMenu = () => {
     .init();
 };
 
-api.getMovies()
+apiProvider.getMovies()
   .then((movies) => {
     moviesModel.setMovies(UpdateType.INIT, movies);
     userModel.setUser(getUser(moviesModel.getMovies()));
