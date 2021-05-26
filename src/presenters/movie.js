@@ -1,8 +1,9 @@
 import MovieView from '../views/movie';
 import DetailsModalView from '../views/details-modal';
 import {render, replace} from '../helpers/render';
-import {checkEscKeyDown} from '../helpers/helpers';
+import {checkEscKeyDown, isOnline} from '../helpers/helpers';
 import {UpdateType, UserAction} from '../helpers/consts';
+import {showMessage} from '../helpers/message';
 
 const BODY_NO_SCROLL_CLASS_NAME = 'hide-overflow';
 
@@ -141,6 +142,12 @@ export default class Movie {
   }
 
   _commentDeleteHandler(commentId) {
+    if (!isOnline()) {
+      showMessage('You can\'t remove a comment offline.');
+      this._detailsModalView.updateDeletingComment(false, true);
+      return;
+    }
+
     const comments = new Set([...this._movie.comments]);
     comments.delete(commentId);
 
@@ -158,6 +165,12 @@ export default class Movie {
   }
 
   _commentSubmitHandler(comment) {
+    if (!isOnline()) {
+      showMessage('You can\'t submit a comment offline.');
+      this._detailsModalView.updateFormState(false, true);
+      return;
+    }
+
     comment.id = String(this._commentsModel.getComments().length);
     const comments = new Set([...this._movie.comments, comment.id]);
 
