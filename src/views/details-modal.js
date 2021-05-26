@@ -522,16 +522,4 @@ export default class DetailsModal extends SmartView {
       isSubmittingS: false,
     });
   }
-
-  static parseStateToData(state) {
-    const data = Object.assign({}, state);
-
-    delete data.commentEmojiS;
-    delete data.commentTextS;
-    delete data.isSubmittingS;
-    delete data.isDeletingS;
-    delete data.deleteElementS;
-
-    return data;
-  }
 }

@@ -92,6 +92,11 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('online', () => {
+  document.title = document.title.replace(' [offline]', '');
   apiProvider.sync();
+});
+
+window.addEventListener('offline', () => {
+  document.title += ' [offline]';
 });
 
