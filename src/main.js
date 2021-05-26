@@ -91,3 +91,7 @@ window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
 });
 
+window.addEventListener('online', () => {
+  apiProvider.sync();
+});
+

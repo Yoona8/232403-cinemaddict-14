@@ -64,4 +64,17 @@ export default class Provider {
   addComment(comment, movieId) {
     return this._api.addComment(comment, movieId);
   }
+
+  sync() {
+    if (isOnline()) {
+      const storedMovies = Object.values(this._store.getItems());
+
+      return this._api.sync(storedMovies)
+        .then((response) => {
+          this._store.setItems(response.updated);
+        });
+    }
+
+    return Promise.reject(new Error('Sync data failed!'));
+  }
 }

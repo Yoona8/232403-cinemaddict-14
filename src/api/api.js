@@ -59,6 +59,16 @@ export default class Api {
       .then((data) => data.comments.map(CommentsModel.adaptToClient));
   }
 
+  sync(movies) {
+    return this._load({
+      url: 'movies/sync',
+      method: Method.POST,
+      body: JSON.stringify(movies),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api._toJSON);
+  }
+
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append('Authorization', this._authorization);
 
