@@ -160,7 +160,7 @@ export default class Movies {
       render(this._moviesView, this._allMoviesView);
     }
 
-    if (moviesCount > MoviesCount.PER_STEP) {
+    if (moviesCount > this._renderedMoviesCount) {
       this._renderShowMoreButton();
     }
   }
@@ -198,13 +198,16 @@ export default class Movies {
     }
   }
 
-  _clearAllMovies() {
+  _clearAllMovies({resetMoviesCount = true} = {}) {
     this._moviePresenters
       .filter((item) => item.container === this._allMoviesView.getContainer())
       .forEach((item) => item.presenter.destroy());
     this._moviePresenters = this._moviePresenters
       .filter((item) => item.container !== this._allMoviesView.getContainer());
-    this._renderedMoviesCount = MoviesCount.PER_STEP;
+
+    if (resetMoviesCount) {
+      this._renderedMoviesCount = MoviesCount.PER_STEP;
+    }
 
     if (this._showMoreButtonView) {
       this._showMoreButtonView.removeElement();
@@ -221,6 +224,13 @@ export default class Movies {
           .filter((item) => item.movieId === movieId)
           .forEach((item) => item.presenter
             .init(updatedMovie, this._userModel.getUser()));
+
+        if (this._filterModel.getFilter() === FilterType.ALL) {
+          break;
+        }
+
+        this._clearAllMovies({resetMoviesCount: false});
+        this._renderAllMovies();
         break;
       case UpdateType.MINOR:
         this._clearAllMovies();
