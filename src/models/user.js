@@ -1,4 +1,5 @@
 import Subject from '../helpers/subject';
+import {getRank} from '../mocks/user';
 
 export default class User extends Subject {
   constructor() {
@@ -7,8 +8,9 @@ export default class User extends Subject {
     this._user = {};
   }
 
-  setUser(user) {
+  setUser(updateType, user) {
     this._user = Object.assign({}, user);
+    this._notify(updateType, this._user);
   }
 
   getUser() {
@@ -16,7 +18,9 @@ export default class User extends Subject {
   }
 
   updateUser(updateType, updatedUser) {
-    this._user = Object.assign({}, updatedUser);
+    this._user = Object.assign({}, updatedUser, {
+      rank: getRank(updatedUser.watched.size),
+    });
     this._notify(updateType, this._user);
   }
 }
