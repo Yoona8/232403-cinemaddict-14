@@ -98,6 +98,7 @@ export default class Movie {
     this._detailsModalView.removeElement();
     this._detailsModalView = null;
     this._commentsModel.removeObserver(this._modelChangeHandler);
+    this._callback.detailsCloseHandler();
   }
 
   _modelChangeHandler() {
@@ -189,5 +190,9 @@ export default class Movie {
 
   addDetailsOpenHandler(cb) {
     this._callback.detailsOpenHandler = cb;
+  }
+
+  addDetailsCloseHandler(cb) {
+    this._callback.detailsCloseHandler = cb;
   }
 }
