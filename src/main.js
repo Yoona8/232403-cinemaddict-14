@@ -10,7 +10,7 @@ import FilterModel from './models/filter';
 import Api from './api/api';
 import Store from './api/store';
 import Provider from './api/provider';
-import {render} from './helpers/render';
+import {render, replace} from './helpers/render';
 import {MenuItem, UpdateType} from './helpers/consts';
 import {getUser} from './mocks/user';
 
@@ -35,9 +35,24 @@ const renderTotalCount = () => {
     new MoviesTotalView(moviesModel.getMovies().length),
   );
 };
-const renderUser = () => {
-  render(document.querySelector('.header'), new UserView(userModel.getUser()));
+
+let userView = new UserView(userModel.getUser());
+
+const renderUser = (updateType) => {
+  const prevView = userView;
+  userView = new UserView(userModel.getUser());
+
+  switch (updateType) {
+    case UpdateType.INIT:
+      render(document.querySelector('.header'), userView);
+      break;
+    default:
+      replace(userView, prevView);
+  }
 };
+
+userModel.addObserver(renderUser);
+
 const renderMenu = () => {
   new MenuPresenter(mainElement, filterModel, userModel, menuClickHandler)
     .init();
@@ -46,9 +61,8 @@ const renderMenu = () => {
 apiProvider.getMovies()
   .then((movies) => {
     moviesModel.setMovies(UpdateType.INIT, movies);
-    userModel.setUser(getUser(moviesModel.getMovies()));
+    userModel.setUser(UpdateType.INIT, getUser(moviesModel.getMovies()));
     renderTotalCount();
-    renderUser();
     renderMenu();
   })
   .catch(() => {

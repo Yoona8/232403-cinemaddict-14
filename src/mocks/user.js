@@ -38,4 +38,4 @@ const getUser = (movies) => {
   };
 };
 
-export {getUser};
+export {getUser, getRank};
