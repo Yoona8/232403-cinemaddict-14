@@ -443,7 +443,8 @@ export default class DetailsModal extends SmartView {
     if (checkCtrlEnterKeyDown(evt)) {
       evt.preventDefault();
 
-      if (!this._state.commentEmojiS || this._state.commentTextS === '') {
+      if (!this._state.commentEmojiS
+        || this._state.commentTextS.trim() === '') {
         this.updateFormState(false, true);
         return;
       }

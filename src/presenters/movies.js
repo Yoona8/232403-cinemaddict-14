@@ -46,6 +46,7 @@ export default class Movies {
     this._allMoviesView = new AllMoviesView();
     this._commentedView = new CommentedMoviesView();
     this._loadingView = new LoadingView();
+    this._noMoviesView = new NoMoviesView();
     this._sortingView = null;
     this._showMoreButtonView = null;
 
@@ -198,8 +199,21 @@ export default class Movies {
     this._renderCommented();
   }
 
+  _renderNoMovies() {
+    if (this._sortingView) {
+      this._sortingView.removeElement();
+      this._sortingView = null;
+    }
+
+    render(this._moviesView, this._noMoviesView);
+  }
+
   _renderBoard() {
-    render(this._container, this._moviesView);
+    if (!this._container.parentElement.contains(
+      this._moviesView.getElement(),
+    )) {
+      render(this._container, this._moviesView);
+    }
 
     if (this._isLoading) {
       render(this._moviesView, this._loadingView);
@@ -207,7 +221,7 @@ export default class Movies {
     }
 
     if (this._getMovies().length === 0) {
-      render(this._moviesView, new NoMoviesView());
+      this._renderNoMovies();
     } else {
       this._renderSorting();
       this._renderMovieList();
@@ -262,9 +276,8 @@ export default class Movies {
         break;
       case UpdateType.MAJOR:
         this._currentSortingType = SortingType.DEFAULT;
-        this._renderSorting();
         this._clearAllMovies();
-        this._renderAllMovies();
+        this._renderBoard();
         break;
       case UpdateType.INIT:
         this._isLoading = false;

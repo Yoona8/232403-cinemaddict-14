@@ -60,7 +60,7 @@ self.addEventListener('activate', (evt) => {
   );
 });
 
-self.addEventListener('fetch', (evt) => {
+const handleFetch = (evt) => {
   const {request} = evt;
 
   evt.respondWith(
@@ -87,4 +87,6 @@ self.addEventListener('fetch', (evt) => {
           });
       })
   );
-});
+};
+
+self.addEventListener('fetch', handleFetch);

@@ -1,4 +1,5 @@
 import Subject from '../helpers/subject';
+import {showMessage} from '../helpers/message';
 
 export default class Comments extends Subject {
   constructor(api) {
@@ -15,6 +16,7 @@ export default class Comments extends Subject {
         this._notify(updateType, this._comments);
       })
       .catch(() => {
+        showMessage('Can\'t get comments while offline!');
         this._comments = [];
         this._notify(updateType, this._comments);
       });
