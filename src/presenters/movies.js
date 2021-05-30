@@ -136,7 +136,7 @@ export default class Movies {
       .slice(0, MoviesCount.TOP_RATED)
       .filter((movie) => Number(movie.rating) > 0);
 
-    if (movies.length === 0) {
+    if (!movies.length) {
       return;
     }
 
@@ -152,7 +152,7 @@ export default class Movies {
       .slice(0, MoviesCount.COMMENTED)
       .filter((movie) => movie.comments.size > 0);
 
-    if (movies.length === 0) {
+    if (!movies.length) {
       return;
     }
 
@@ -220,7 +220,7 @@ export default class Movies {
       return;
     }
 
-    if (this._getMovies().length === 0) {
+    if (!this._getMovies().length) {
       this._renderNoMovies();
     } else {
       this._renderSorting();

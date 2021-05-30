@@ -28,14 +28,16 @@ const userModel = new UserModel();
 const commentsModel = new CommentsModel(apiProvider);
 const filterModel = new FilterModel();
 const mainElement = document.querySelector('.main');
+const totalCountElement = document.querySelector('.footer__statistics');
 
 const renderTotalCount = () => {
   render(
-    document.querySelector('.footer__statistics'),
+    totalCountElement,
     new MoviesTotalView(moviesModel.getMovies().length),
   );
 };
 
+const headerElement = document.querySelector('.header');
 let userView = new UserView(userModel.getUser());
 
 const renderUser = (updateType) => {
@@ -44,7 +46,7 @@ const renderUser = (updateType) => {
 
   switch (updateType) {
     case UpdateType.INIT:
-      render(document.querySelector('.header'), userView);
+      render(headerElement, userView);
       break;
     default:
       replace(userView, prevView);

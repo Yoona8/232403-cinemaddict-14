@@ -1,5 +1,5 @@
 const getRank = (watchedCount) => {
-  if (watchedCount === 0) {
+  if (!watchedCount) {
     return null;
   } else if (watchedCount >= 21) {
     return 'Movie Buff';

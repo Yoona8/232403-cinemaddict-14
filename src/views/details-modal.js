@@ -132,8 +132,8 @@ const getDetailsModalTemplate = (state, commentMessages) => {
 
   const formattedReleaseDate = formatReleaseDate(releaseDate);
   const {hours, minutes} = formatDuration(duration);
-  const durationOutput = `${hours === 0 ? '' : `${hours}h`} ${minutes}m`.trim();
-  const genresTemplate = genres.length === 0 ? '' : getGenresTemplate(genres);
+  const durationOutput = `${!hours ? '' : `${hours}h`} ${minutes}m`.trim();
+  const genresTemplate = !genres.length ? '' : getGenresTemplate(genres);
   const watchedChecked = isWatched ? 'checked' : '';
   const toWatchChecked = isWatchlist ? 'checked' : '';
   const favoriteChecked = isFavorite ? 'checked' : '';

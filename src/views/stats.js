@@ -166,6 +166,22 @@ export default class Stats extends SmartView {
 
     this._user = null;
     this._movies = null;
+    this._filters = [{
+      type: StatsPeriodType.ALL,
+      name: 'All time',
+    }, {
+      type: StatsPeriodType.TODAY,
+      name: 'Today',
+    }, {
+      type: StatsPeriodType.WEEK,
+      name: 'Week',
+    }, {
+      type: StatsPeriodType.MONTH,
+      name: 'Month',
+    }, {
+      type: StatsPeriodType.YEAR,
+      name: 'Year',
+    }];
 
     this._currentFilter = StatsPeriodType.ALL;
 
@@ -185,7 +201,7 @@ export default class Stats extends SmartView {
       watchedMovies: this._getWatchedMovies(),
       genreCounts,
       topGenre,
-      filters: this._getFilters(),
+      filters: this._filters,
       currentFilter: this._currentFilter,
     });
 
@@ -206,27 +222,7 @@ export default class Stats extends SmartView {
   }
 
   _getTopGenre(genreCounts) {
-    return Object.entries(genreCounts).length === 0
-      ? '' : getTopGenre(genreCounts);
-  }
-
-  _getFilters() {
-    return [{
-      type: StatsPeriodType.ALL,
-      name: 'All time',
-    }, {
-      type: StatsPeriodType.TODAY,
-      name: 'Today',
-    }, {
-      type: StatsPeriodType.WEEK,
-      name: 'Week',
-    }, {
-      type: StatsPeriodType.MONTH,
-      name: 'Month',
-    }, {
-      type: StatsPeriodType.YEAR,
-      name: 'Year',
-    }];
+    return !Object.entries(genreCounts).length ? '' : getTopGenre(genreCounts);
   }
 
   _getTemplate() {
